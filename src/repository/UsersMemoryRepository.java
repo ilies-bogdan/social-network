@@ -43,4 +43,19 @@ public class UsersMemoryRepository implements UsersRepository {
         }
         throw new RepositoryException("User does not exist!\n");
     }
+
+    /**
+     * Finds a user by username.
+     * @param username - The username being looked for
+     * @return the user if it was found or a User with null attributes otherwise.
+     */
+    @Override
+    public User findUser(String username) {
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
+                return u;
+            }
+        }
+        return new User(null, null, null);
+    }
 }

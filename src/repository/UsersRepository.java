@@ -10,4 +10,5 @@ public interface UsersRepository {
     List<User> getAll();
     void addUser(User user) throws RepositoryException;
     void removeUser(User user) throws RepositoryException;
+    User findUser(String username);
 }
