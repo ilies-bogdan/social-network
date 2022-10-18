@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class User {
+public class User implements HasID<String> {
     private String username;
     private String password;
     private String email;
@@ -58,7 +58,7 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return username.equals(user.username) && email.equals(user.email);
+        return username.equals(user.username) || email.equals(user.email);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "Username: " + username  +", Email:" + email;
+        return "Username: " + username  +", Email: " + email;
     }
 
     /**
@@ -85,5 +85,15 @@ public class User {
      */
     public void removeFriend(User user) {
         friends.remove(user);
+    }
+
+    @Override
+    public String getId() {
+        return username;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.username = id;
     }
 }
