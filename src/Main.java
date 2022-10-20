@@ -1,5 +1,5 @@
 import repository.InMemoryRepository;
-import service.ApplicationService;
+import service.Network;
 import testing.TestRunner;
 import validators.UserValidator;
 import view.CLI;
@@ -9,7 +9,7 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
-        ApplicationService usersService = new ApplicationService(new InMemoryRepository<>(), new UserValidator(), new InMemoryRepository<>());
+        Network usersService = new Network(new InMemoryRepository<>(), new UserValidator(), new InMemoryRepository<>());
         CLI cli = new CLI(usersService);
         cli.run();
     }

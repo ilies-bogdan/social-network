@@ -54,6 +54,7 @@ public class Friendship implements HasID<Set<String>> {
     @Override
     public Set<String> getID() {
         Set<String> res = new HashSet<>();
+        // The ID is an interchangeable combination of the two Users.
         res.add(u1.getUsername());
         res.add(u2.getUsername());
         return res;

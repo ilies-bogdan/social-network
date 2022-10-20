@@ -4,15 +4,15 @@ import domain.Friendship;
 import domain.User;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
-import service.ApplicationService;
+import service.Network;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class CLI {
-    private ApplicationService appSrv;
+    private Network appSrv;
 
-    public CLI(ApplicationService usersSrv) {
+    public CLI(Network usersSrv) {
         this.appSrv = usersSrv;
     }
 
@@ -29,8 +29,10 @@ public class CLI {
         System.out.println("2. Remove user");
         System.out.println("3. Add friendship");
         System.out.println("4. Remove friendship");
-        System.out.println("5. Show users");
-        System.out.println("6. Show friendships");
+        System.out.println("5. Communities count");
+        System.out.println("6. Most sociable community");
+        System.out.println("7. Show users");
+        System.out.println("8. Show friendships");
         System.out.println();
         System.out.println("Press X to exit Admin Menu");
         System.out.println();
@@ -88,6 +90,17 @@ public class CLI {
         }
     }
 
+    private void countCommunities() {
+        int communitiesCount = appSrv.getNumberOfCommunities();
+        String be = "are ";
+        String count = " communities.\n";
+        if (communitiesCount == 1) {
+            be = "is ";
+            count = " community.\n";
+        }
+        System.out.println("There " + be + communitiesCount + count);
+    }
+
     private void printUsers() {
         List<User> users = appSrv.getAllUsers();
         for (User user : users) {
@@ -120,9 +133,14 @@ public class CLI {
                     removeFriendship(scanner);
                     break;
                 case "5":
-                    printUsers();
+                    countCommunities();
                     break;
                 case "6":
+                    break;
+                case "7":
+                    printUsers();
+                    break;
+                case "8":
                     printFriendships();
                     break;
                 case "x":
@@ -130,6 +148,7 @@ public class CLI {
                     System.out.println("Exiting Admin Menu...");
                     return;
                 default:
+                    System.out.println("Invalid command...");
                     break;
             }
         }
@@ -156,6 +175,7 @@ public class CLI {
                     System.out.println("Exiting...");
                     return;
                 default:
+                    System.out.println("Invalid command...");
                     break;
             }
         }
