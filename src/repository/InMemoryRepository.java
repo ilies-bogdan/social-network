@@ -47,15 +47,16 @@ public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E
     /**
      * Finds a user by username.
      * @param id - The ID being looked for
-     * @return the user if it was found or null otherwise.
+     * @return the user if it was found.
+     * @throws RepositoryException if the user has not been found.
      */
     @Override
-    public E find(ID id) {
+    public E find(ID id) throws RepositoryException {
         for (E e : entities) {
-            if (e.getId().equals(id)) {
+            if (e.getID().equals(id)) {
                 return e;
             }
         }
-        return null;
+        throw new RepositoryException("Entity not found!\n");
     }
 }

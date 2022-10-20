@@ -88,12 +88,12 @@ public class User implements HasID<String> {
     }
 
     @Override
-    public String getId() {
+    public String getID() {
         return username;
     }
 
     @Override
-    public void setId(String id) {
+    public void setID(String id) {
         this.username = id;
     }
 }

@@ -9,5 +9,5 @@ public interface Repository<E, ID> {
     List<E> getAll();
     void add(E entity) throws RepositoryException;
     void remove(E entity) throws RepositoryException;
-    E find(ID id);
+    E find(ID id) throws RepositoryException;
 }
