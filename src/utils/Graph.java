@@ -3,7 +3,6 @@ package utils;
 public class Graph {
     /**
      * DFS in an undirected graph.
-     *
      * @param adj         - Adjacency matrix
      * @param visited     - Integer vector
      * @param vertexCount - Number of vertexes of the graph
