@@ -17,7 +17,7 @@ public class CLI {
     }
 
     private void showMainMenu() {
-        System.out.println("1. Log in as Admin");
+        System.out.println("\n1. Log in as Admin");
         System.out.println("2. Log in as User");
         System.out.println();
         System.out.println("Press X to exit...");
@@ -25,7 +25,7 @@ public class CLI {
     }
 
     private void showAdminMenu() {
-        System.out.println("1. Add user");
+        System.out.println("\n1. Add user");
         System.out.println("2. Remove user");
         System.out.println("3. Add friendship");
         System.out.println("4. Remove friendship");
@@ -47,7 +47,7 @@ public class CLI {
         String email = scanner.nextLine();
         try {
             appSrv.addUser(username, password, email);
-            System.out.println("User added.\n");
+            System.out.println("\nUser added.\n");
         } catch (RepositoryException | ValidationException exception) {
             System.out.println(exception.getMessage());
         }
@@ -58,7 +58,7 @@ public class CLI {
         String username = scanner.nextLine();
         try {
             appSrv.removeUser(username);
-            System.out.println("User deleted.\n");
+            System.out.println("\nUser deleted.\n");
         } catch (RepositoryException exception) {
             System.out.println(exception.getMessage());
         }
@@ -71,7 +71,7 @@ public class CLI {
         String username2 = scanner.nextLine();
         try {
             appSrv.addFriendship(username1, username2);
-            System.out.println("Friendship established!\n");
+            System.out.println("\nFriendship established!\n");
         } catch (RepositoryException exception) {
             System.out.println(exception.getMessage());
         }
@@ -84,7 +84,7 @@ public class CLI {
         String username2 = scanner.nextLine();
         try {
             appSrv.removeFriendship(username1, username2);
-            System.out.println("Friendship disbanded!\n");
+            System.out.println("\nFriendship disbanded!\n");
         } catch (RepositoryException exception) {
             System.out.println(exception.getMessage());
         }
@@ -98,7 +98,15 @@ public class CLI {
             be = "is ";
             count = " community.\n";
         }
-        System.out.println("There " + be + communitiesCount + count);
+        System.out.println("\nThere " + be + communitiesCount + count);
+    }
+
+    private void mostSociableCommunity() {
+        List<User> commmunity = appSrv.mostSociableCommunity();
+        System.out.println("\nMost sociable community is:");
+        for (User user : commmunity) {
+            System.out.println(user.toString());
+        }
     }
 
     private void printUsers() {
@@ -120,42 +128,25 @@ public class CLI {
             showAdminMenu();
             String input = scanner.nextLine();
             switch (input) {
-                case "1":
-                    addUser(scanner);
-                    break;
-                case "2":
-                    removeUser(scanner);
-                    break;
-                case "3":
-                    addFriendship(scanner);
-                    break;
-                case "4":
-                    removeFriendship(scanner);
-                    break;
-                case "5":
-                    countCommunities();
-                    break;
-                case "6":
-                    break;
-                case "7":
-                    printUsers();
-                    break;
-                case "8":
-                    printFriendships();
-                    break;
-                case "x":
-                case "X":
-                    System.out.println("Exiting Admin Menu...");
+                case "1" -> addUser(scanner);
+                case "2" -> removeUser(scanner);
+                case "3" -> addFriendship(scanner);
+                case "4" -> removeFriendship(scanner);
+                case "5" -> countCommunities();
+                case "6" -> mostSociableCommunity();
+                case "7" -> printUsers();
+                case "8" -> printFriendships();
+                case "x", "X" -> {
+                    System.out.println("\nExiting Admin Menu...");
                     return;
-                default:
-                    System.out.println("Invalid command...");
-                    break;
+                }
+                default -> System.out.println("\nInvalid command...");
             }
         }
     }
 
     private void showUserMenu() {
-        System.out.println("In user");
+        System.out.println("\nIn user");
     }
 
     public void run() {

@@ -125,16 +125,27 @@ public class Network {
         user2.removeFriend(user1);
     }
 
-    private void initializeForDFS(int[][] adj, boolean[] visited, int vertexCount) {
-        // Initialize adjacency matrix with 0.
+    /**
+     * Initialize adjacency matrix with 0.
+     * @param adj - The adjacency matrix
+     * @param vertexCount - The number of vertexes
+     */
+    private void initAdjacencyMatrix(int[][] adj, int vertexCount) {
         for (int i = 0; i < vertexCount; i++) {
             for (int j = 0; j < vertexCount; j++) {
                 adj[i][j] = 0;
             }
         }
-        // Initialize the visited vector with false.
-        for (int i = 0; i < vertexCount; i++) {
-            visited[i] = false;
+    }
+
+    /**
+     * Initialize a boolean vector with false.
+     * @param vector - Boolean vector
+     * @param size - Number of elements in the vector
+     */
+    private void initBooleanWithFalse(boolean[] vector, int size) {
+        for (int i = 0; i < size; i++) {
+            vector[i] = false;
         }
     }
 
@@ -166,8 +177,9 @@ public class Network {
         int vertexCount = users.size();
 
         int[][] adj = new int[vertexCount][vertexCount];
+        initAdjacencyMatrix(adj,vertexCount);
         boolean[] visited = new boolean[vertexCount];
-        initializeForDFS(adj, visited, vertexCount);
+        initBooleanWithFalse(visited, vertexCount);
 
         mapNetworkToGraph(adj, vertexCount);
 
@@ -181,5 +193,67 @@ public class Network {
         }
 
         return communitiesCount;
+    }
+
+    /**
+     * Gets the most sociable community in the Network
+     * (connected component with the longest path)
+     * @return a User list containing the Users that make up
+     * the most sociable community
+     */
+    public List<User> mostSociableCommunity() {
+        List<User> users = usersRepo.getAll();
+        int vertexCount = users.size();
+
+        int[][] adj = new int[vertexCount][vertexCount];
+        initAdjacencyMatrix(adj, vertexCount);
+        boolean[] visited = new boolean[vertexCount];
+        initBooleanWithFalse(visited, vertexCount);
+
+        mapNetworkToGraph(adj, vertexCount);
+
+        boolean[] startedBFSFrom = new boolean[vertexCount];
+        initBooleanWithFalse(startedBFSFrom, vertexCount);
+
+        List<User> result = new ArrayList<>();
+        int maxLength = 0;
+        for (int i = 0; i < vertexCount; i++) {
+            if (!visited[i]) {
+                // Find each connected component.
+                Graph.dfs(adj, visited, vertexCount, i);
+
+                // For each connected component, do a BFS from each
+                // of the vertexes to find the longest path between
+                // two vertexes.
+                for (int j = 0; j < vertexCount; j++) {
+                    if (visited[j] && !startedBFSFrom[j]) {
+                        // Mark vertexes which already were the starting
+                        // points for BFS.
+                        startedBFSFrom[j] = true;
+
+                        boolean[] visitedDuringBFS = new boolean[vertexCount];
+                        initBooleanWithFalse(visitedDuringBFS, vertexCount);
+
+                        int localLength = Graph.bfs(adj, visitedDuringBFS, vertexCount, j);
+
+                        if (localLength > maxLength) { // New longest path has been found.
+                            maxLength = localLength;
+
+                            // Store in the result the users that make up
+                            // the connected component with the current
+                            // longest path.
+                            result.clear();
+                            for (int k = 0; k < vertexCount; k++) {
+                                if (visitedDuringBFS[k]) {
+                                    result.add(users.get(k));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }
