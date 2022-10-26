@@ -1,4 +1,4 @@
-package validators;
+package domain.validators;
 
 import exceptions.ValidationException;
 

@@ -6,7 +6,7 @@ import exceptions.RepositoryException;
 import exceptions.ValidationException;
 import repository.Repository;
 import utils.Graph;
-import validators.Validator;
+import domain.validators.Validator;
 
 import java.util.ArrayList;
 import java.util.HashSet;

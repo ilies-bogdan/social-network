@@ -3,7 +3,7 @@ import exceptions.ValidationException;
 import repository.InMemoryRepository;
 import service.Network;
 import testing.TestRunner;
-import validators.UserValidator;
+import domain.validators.UserValidator;
 import view.CLI;
 
 public class Main {
