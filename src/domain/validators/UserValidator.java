@@ -1,4 +1,4 @@
-package validators;
+package domain.validators;
 
 import domain.User;
 import exceptions.ValidationException;
@@ -7,13 +7,13 @@ public class UserValidator implements Validator<User> {
     @Override
     public void validate(User user) throws ValidationException {
         String message = "";
-        if (user.getUsername().equals("")) {
+        if (user.getUsername() == null || user.getUsername().trim().length() == 0) {
             message += "Username can not be empty!\n";
         }
-        if (user.getEmail().equals("")) {
+        if (user.getEmail() == null || user.getEmail().trim().length() == 0) {
             message += "Email can not be empty!\n";
         }
-        if (user.getPassword().equals("")) {
+        if (user.getPassword() == null || user.getPassword().trim().length() == 0) {
             message += "Password can not be empty!\n";
         }
         if (message.length() > 0) {
