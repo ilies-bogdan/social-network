@@ -1,0 +1,4 @@
+BogdanIlies;12345678;iliesbogdan147@gmail.com
+CristiDimbu;qwertyui;playnt98@gmail.com
+AdiRomanov;noaptebunna;adiromanov4@gmail.com
+VladVraja;bulevard;vladvraja@gmail.com

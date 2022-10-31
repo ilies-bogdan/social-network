@@ -1,7 +1,8 @@
-package repository;
+package repository.memory;
 
 import domain.HasID;
 import exceptions.RepositoryException;
+import repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
