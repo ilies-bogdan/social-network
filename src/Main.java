@@ -13,15 +13,15 @@ public class Main {
 
         Network usersService = new Network(new InMemoryRepository<>(), new UserValidator(), new InMemoryRepository<>());
         try {
-            usersService.addUser("1", "1", "1");
-            usersService.addUser("2", "2", "2");
-            usersService.addUser("3", "3", "3");
-            usersService.addUser("4", "4", "4");
-            usersService.addUser("5", "5", "5");
-            usersService.addUser("6", "6", "6");
-            usersService.addUser("7", "7", "7");
-            usersService.addUser("8", "8", "8");
-            usersService.addUser("9", "9", "9");
+            usersService.addUser("1", "12345678", "1@gmail.com");
+            usersService.addUser("2", "12345678", "2@gmail.com");
+            usersService.addUser("3", "12345678", "3@gmail.com");
+            usersService.addUser("4", "12345678", "4@gmail.com");
+            usersService.addUser("5", "12345678", "5@gmail.com");
+            usersService.addUser("6", "12345678", "6@gmail.com");
+            usersService.addUser("7", "12345678", "7@gmail.com");
+            usersService.addUser("8", "12345678", "8@gmail.com");
+            usersService.addUser("9", "12345678", "9@gmail.com");
 
             usersService.addFriendship("1", "2");
             usersService.addFriendship("1", "3");
@@ -31,6 +31,7 @@ public class Main {
             usersService.addFriendship("7", "8");
             usersService.addFriendship("8", "9");
         } catch (RepositoryException | ValidationException e) {}
+
         CLI cli = new CLI(usersService);
         cli.run();
     }

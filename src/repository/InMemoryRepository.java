@@ -13,16 +13,29 @@ public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E
         entities = new ArrayList<>();
     }
 
+    /**
+     * Gets the size of the repository.
+     * @return the size.
+     */
     @Override
     public int size() {
         return entities.size();
     }
 
+    /**
+     * Gets all entries.
+     * @return an Entity List.
+     */
     @Override
     public List<E> getAll() {
         return entities;
     }
 
+    /**
+     * Adds an Entity to the repository.
+     * @param entity - The Entity to be added
+     * @throws RepositoryException if the Entiry already is in the repository.
+     */
     @Override
     public void add(E entity) throws RepositoryException {
         for (E e : entities) {
@@ -33,6 +46,11 @@ public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E
         entities.add(entity);
     }
 
+    /**
+     * Removes an Entity from the repository.
+     * @param entity - The Entity to be removed
+     * @throws RepositoryException if the Entity is not in the repository.
+     */
     @Override
     public void remove(E entity) throws RepositoryException {
         for (E e : entities) {

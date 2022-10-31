@@ -14,8 +14,7 @@ public class TestRunner {
         User u2 = new User("Cristi", "123456", "playnt98@gmail.com");
         User u3 = new User("Adi", "asdfgh", "adiromanov44@gmail.com");
 
-        List<User> userList = new ArrayList<>(Arrays.asList(u1, u2, u3));
-        return userList;
+        return new ArrayList<>(Arrays.asList(u1, u2, u3));
     }
 
 //    private void runUsersMemoryRepositoryTests() {

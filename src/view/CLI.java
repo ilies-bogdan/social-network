@@ -33,9 +33,7 @@ public class CLI {
         System.out.println("6. Most sociable community");
         System.out.println("7. Show users");
         System.out.println("8. Show friendships");
-        System.out.println();
-        System.out.println("Press X to exit Admin Menu");
-        System.out.println();
+        System.out.println("\nPress X to exit Admin Menu\n");
     }
 
     private void addUser(Scanner scanner) {
@@ -56,11 +54,24 @@ public class CLI {
     private void removeUser(Scanner scanner) {
         System.out.println("Username: ");
         String username = scanner.nextLine();
-        try {
-            appSrv.removeUser(username);
-            System.out.println("\nUser deleted.\n");
-        } catch (RepositoryException exception) {
-            System.out.println(exception.getMessage());
+
+        System.out.println("WARNING: Removing the user will remove all of its related friendships!");
+        System.out.println("Are you sure you want to continue? Y/N");
+        String answer = scanner.nextLine();
+
+        if (answer.equals("Y") || answer.equals("y")) {
+            try {
+                appSrv.removeUser(username);
+                System.out.println("\nUser deleted.\n");
+            } catch (RepositoryException exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+        else if (answer.equals("N") || answer.equals("n")) {
+            System.out.println("Aborted.");
+        }
+        else {
+            System.out.println("Invalid answer!");
         }
     }
 
@@ -105,7 +116,7 @@ public class CLI {
         List<User> commmunity = appSrv.mostSociableCommunity();
         System.out.println("\nMost sociable community is:");
         for (User user : commmunity) {
-            System.out.println(user.toString());
+            System.out.print(user.toString() + " -> ");
         }
     }
 

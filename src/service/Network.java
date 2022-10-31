@@ -61,7 +61,7 @@ public class Network {
      * @param password - String, can't be null
      * @param email    - String, can't be null
      * @throws RepositoryException if the user has already been added.
-     * @throws ValidationException if any of the user attributes are empty.
+     * @throws ValidationException if any of the user attributes are empty or if the Password is too short.
      */
     public void addUser(String username, String password, String email) throws RepositoryException, ValidationException {
         User user = new User(username, password, email);
@@ -159,8 +159,8 @@ public class Network {
                     friendshipID.add(users.get(j).getUsername());
                     friendshipsRepo.find(friendshipID);
                     // If find is successfull, update the adjacency matrix with 1.
-                    adj[i][j] = 1; // IDEA: Save indexes i and j here for later reference
-                    adj[j][i] = 1; // and initialize the matrix with -1 instead (to access the 0).
+                    adj[i][j] = 1;
+                    adj[j][i] = 1;
                 } catch (RepositoryException exception) {continue;}
             }
         }
