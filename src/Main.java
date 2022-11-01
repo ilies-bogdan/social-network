@@ -12,7 +12,7 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
-        Network usersService = new Network(new UserFileRepository("data/users.txt"), new UserValidator(), new InMemoryRepository<>());
+        Network usersService = new Network(new UserFileRepository("data/users_test.txt"), new UserValidator(), new InMemoryRepository<>());
 //        try {
 //            usersService.addUser("1", "12345678", "1@gmail.com");
 //            usersService.addUser("2", "12345678", "2@gmail.com");
