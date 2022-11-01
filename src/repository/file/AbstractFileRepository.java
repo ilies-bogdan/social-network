@@ -50,6 +50,18 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         }
     }
 
+    private void appendData(E entity) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
+            writer.write(entityToStringFormat(entity));
+            writer.newLine();
+            writer.close();
+        } catch (IOException exception) {
+            System.out.println("Data writing error.\n");
+            exception.printStackTrace();
+        }
+    }
+
     public abstract E extractEntity(List<String> attributes);
 
     public abstract String entityToStringFormat(E e);
@@ -70,7 +82,7 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
     public void add(E e) throws RepositoryException {
         loadData();
         super.add(e);
-        writeData();
+        appendData(e);
     }
 
     @Override

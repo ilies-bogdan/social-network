@@ -71,22 +71,6 @@ public class User implements HasID<String> {
         return "Username: " + username  +", Email: " + email;
     }
 
-    /**
-     * Adds a friend to the user's friendlist.
-     * @param user - The friend
-     */
-    public void addFriend(User user) {
-        friends.add(user);
-    }
-
-    /**
-     * Removes a friend from the user's friendlist.
-     * @param user - The friend that is to be removed
-     */
-    public void removeFriend(User user) {
-        friends.remove(user);
-    }
-
     @Override
     public String getID() {
         return username;

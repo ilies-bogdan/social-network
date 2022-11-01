@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Friendship implements HasID<Set<String>> {
+public class Friendship implements HasID<Set<User>> {
     private User u1;
     private User u2;
 
@@ -52,14 +52,14 @@ public class Friendship implements HasID<Set<String>> {
     }
 
     @Override
-    public Set<String> getID() {
-        Set<String> res = new HashSet<>();
+    public Set<User> getID() {
+        Set<User> id = new HashSet<>();
         // The ID is an interchangeable combination of the two Users.
-        res.add(u1.getUsername());
-        res.add(u2.getUsername());
-        return res;
+        id.add(u1);
+        id.add(u2);
+        return id;
     }
 
     @Override
-    public void setID(Set<String> ID) {}
+    public void setID(Set<User> ID) {}
 }

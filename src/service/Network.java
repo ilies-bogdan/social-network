@@ -16,11 +16,11 @@ import java.util.Set;
 public class Network {
     private Repository<User, String> usersRepo;
     private final Validator<User> userVal;
-    private Repository<Friendship, Set<String>> friendshipsRepo;
+    private Repository<Friendship, Set<User>> friendshipsRepo;
 
     // private static final UsersService usersSrv = new UsersService();
 
-    public Network(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<String>> friendshipsRepo) {
+    public Network(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
         this.usersRepo = usersRepo;
         this.userVal = userVal;
         this.friendshipsRepo = friendshipsRepo;
@@ -105,8 +105,6 @@ public class Network {
         User user2 = usersRepo.find(username2);
         Friendship friendship = new Friendship(user1, user2);
         friendshipsRepo.add(friendship);
-        user1.addFriend(user2);
-        user2.addFriend(user1);
     }
 
     /**
@@ -121,8 +119,6 @@ public class Network {
         User user2 = usersRepo.find(username2);
         Friendship friendship = new Friendship(user1, user2);
         friendshipsRepo.remove(friendship);
-        user1.removeFriend(user2);
-        user2.removeFriend(user1);
     }
 
     /**
@@ -154,9 +150,9 @@ public class Network {
         for (int i = 0; i < vertexCount; i++) {
             for (int j = 0; j < vertexCount; j++) {
                 try {
-                    Set<String> friendshipID = new HashSet<>();
-                    friendshipID.add(users.get(i).getUsername());
-                    friendshipID.add(users.get(j).getUsername());
+                    Set<User> friendshipID = new HashSet<>();
+                    friendshipID.add(users.get(i));
+                    friendshipID.add(users.get(j));
                     friendshipsRepo.find(friendshipID);
                     // If find is successfull, update the adjacency matrix with 1.
                     adj[i][j] = 1;
