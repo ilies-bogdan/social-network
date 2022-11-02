@@ -27,7 +27,7 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
             super.entities.clear();
             List<String> lines = Files.readAllLines(path);
             lines.forEach(line -> {
-                E entity = extractEntity(Arrays.asList(line.split(";")));
+                E entity = extractEntity(Arrays.asList(line.split(",")));
                 super.entities.add(entity);
             });
         } catch (IOException exception) {

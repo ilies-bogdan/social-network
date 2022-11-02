@@ -20,7 +20,7 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
 
     @Override
     public String entityToStringFormat(Friendship friendship) {
-        return friendship.getU1().getUsername() + ";" + friendship.getU1().getPassword() + ";" + friendship.getU1().getEmail() + ";" +
-                friendship.getU2().getUsername() + ";" + friendship.getU2().getPassword() + ";" + friendship.getU2().getEmail();
+        return friendship.getU1().getUsername() + "," + friendship.getU1().getPassword() + "," + friendship.getU1().getEmail() + "," +
+                friendship.getU2().getUsername() + "," + friendship.getU2().getPassword() + "," + friendship.getU2().getEmail();
     }
 }

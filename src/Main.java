@@ -11,7 +11,9 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
-        Network usersService = new Network(new UserFileRepository("data/users.txt"), new UserValidator(), new FriendshipFileRepository("data/friendships.txt"));
+        Network usersService = new Network(new UserFileRepository("data/users.csv"),
+                new UserValidator(),
+                new FriendshipFileRepository("data/friendships.csv"));
 
         CLI cli = new CLI(usersService);
         cli.run();

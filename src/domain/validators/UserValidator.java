@@ -10,7 +10,7 @@ public class UserValidator implements Validator<User> {
     /**
      * Validates a User.
      * @param user - The User to be validated
-     * @throws ValidationException if either one of the Username, Email or Password is empty.
+     * @throws ValidationException if either one of the User fields is empty or contains the ',' character.
      *                             if the Password is too short.
      *                             if the Email is invalid.
      */
@@ -19,13 +19,16 @@ public class UserValidator implements Validator<User> {
         String message = "";
         if (user.getUsername() == null || user.getUsername().trim().length() == 0) {
             message += "Username can not be empty!\n";
+        } else if (user.getUsername().contains(",")) {
+            message += "Not allowed character in username!\n";
         }
 
         if (user.getEmail() == null || user.getEmail().trim().length() == 0) {
             message += "Email can not be empty!\n";
-        }
-        else {
-            String regex = "^.+@.+$";
+        } else if (user.getEmail().contains(",")) {
+            message += "Not allowed character in email!\n";
+        } else {
+            String regex = "^.+@.+[.].+$";
             Pattern pattern = Pattern.compile(regex);
 
             Matcher matcher = pattern.matcher(user.getEmail());
@@ -36,10 +39,12 @@ public class UserValidator implements Validator<User> {
 
         if (user.getPassword() == null || user.getPassword().trim().length() == 0) {
             message += "Password can not be empty!\n";
-        }
-        else if (user.getPassword().length() < 8) {
+        } else if (user.getPassword().contains(",")) {
+            message += "Not allowed character in password!\n";
+        } else if (user.getPassword().length() < 8) {
             message += "Password must be at least 8 characters long!\n";
         }
+
         if (message.length() > 0) {
             throw new ValidationException(message);
         }

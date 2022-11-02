@@ -115,9 +115,10 @@ public class CLI {
     private void mostSociableCommunity() {
         List<User> commmunity = appSrv.mostSociableCommunity();
         System.out.println("\nMost sociable community is:");
-        for (User user : commmunity) {
-            System.out.print(user.toString() + " -> ");
+        for (int i = 0; i < commmunity.size() - 1; i++) {
+            System.out.print(commmunity.get(0).toString() + " -> ");
         }
+        System.out.println(commmunity.get(commmunity.size() - 1));
     }
 
     private void printUsers() {

@@ -16,6 +16,6 @@ public class UserFileRepository extends AbstractFileRepository<User, String> {
 
     @Override
     public String entityToStringFormat(User user) {
-        return user.getUsername() + ";" + user.getPassword() + ";" + user.getEmail();
+        return user.getUsername() + "," + user.getPassword() + "," + user.getEmail();
     }
 }
