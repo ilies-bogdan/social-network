@@ -64,10 +64,10 @@ public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E
     }
 
     /**
-     * Finds a user by username.
+     * Finds an Entity by ID.
      * @param id - The ID being looked for
-     * @return the user if it was found.
-     * @throws RepositoryException if the user has not been found.
+     * @return the Entity if it was found.
+     * @throws RepositoryException if the Entity has not been found.
      */
     @Override
     public E find(ID id) throws RepositoryException {
@@ -77,5 +77,19 @@ public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E
             }
         }
         throw new RepositoryException("Entity not found!\n");
+    }
+
+    /**
+     * Updates an entity
+     * @param entity - The new Entity.
+     */
+    public void update(E entity) throws RepositoryException {
+        for (int i = 0; i < entities.size(); i++) {
+            if (entities.get(i).getID().equals(entity.getID())) {
+                entities.set(i, entity);
+                return;
+            }
+        }
+        throw new RepositoryException("Entity does not exist!\n");
     }
 }

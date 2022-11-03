@@ -11,11 +11,11 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
-        Network usersService = new Network(new UserFileRepository("data/users.csv"),
+        Network applicationService = new Network(new UserFileRepository("data/users_test.csv"),
                 new UserValidator(),
                 new FriendshipFileRepository("data/friendships.csv"));
 
-        CLI cli = new CLI(usersService);
+        CLI cli = new CLI(applicationService);
         cli.run();
     }
 }

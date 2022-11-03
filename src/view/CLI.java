@@ -27,12 +27,13 @@ public class CLI {
     private void showAdminMenu() {
         System.out.println("\n1. Add user");
         System.out.println("2. Remove user");
-        System.out.println("3. Add friendship");
-        System.out.println("4. Remove friendship");
-        System.out.println("5. Communities count");
-        System.out.println("6. Most sociable community");
-        System.out.println("7. Show users");
-        System.out.println("8. Show friendships");
+        System.out.println("3. Update user");
+        System.out.println("4. Add friendship");
+        System.out.println("5. Remove friendship");
+        System.out.println("6. Communities count");
+        System.out.println("7. Most sociable community");
+        System.out.println("8. Show users");
+        System.out.println("9. Show friendships");
         System.out.println("\nPress X to exit Admin Menu\n");
     }
 
@@ -43,6 +44,7 @@ public class CLI {
         String password = scanner.nextLine();
         System.out.println("Email: ");
         String email = scanner.nextLine();
+
         try {
             appSrv.addUser(username, password, email);
             System.out.println("\nUser added.\n");
@@ -75,11 +77,28 @@ public class CLI {
         }
     }
 
+    private void updateUser(Scanner scanner) {
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("New password: ");
+        String newPassword = scanner.nextLine();
+        System.out.print("New email: ");
+        String newEmail = scanner.nextLine();
+
+        try {
+            appSrv.updateUser(username, newPassword, newEmail);
+            System.out.println("\nUser updated!\n");
+        } catch (RepositoryException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
     private void addFriendship(Scanner scanner) {
         System.out.println("First User: ");
         String username1 = scanner.nextLine();
         System.out.println("Second User: ");
         String username2 = scanner.nextLine();
+
         try {
             appSrv.addFriendship(username1, username2);
             System.out.println("\nFriendship established!\n");
@@ -93,6 +112,7 @@ public class CLI {
         String username1 = scanner.nextLine();
         System.out.println("Second User: ");
         String username2 = scanner.nextLine();
+
         try {
             appSrv.removeFriendship(username1, username2);
             System.out.println("\nFriendship disbanded!\n");
@@ -142,12 +162,13 @@ public class CLI {
             switch (input) {
                 case "1" -> addUser(scanner);
                 case "2" -> removeUser(scanner);
-                case "3" -> addFriendship(scanner);
-                case "4" -> removeFriendship(scanner);
-                case "5" -> countCommunities();
-                case "6" -> mostSociableCommunity();
-                case "7" -> printUsers();
-                case "8" -> printFriendships();
+                case "3" -> updateUser(scanner);
+                case "4" -> addFriendship(scanner);
+                case "5" -> removeFriendship(scanner);
+                case "6" -> countCommunities();
+                case "7" -> mostSociableCommunity();
+                case "8" -> printUsers();
+                case "9" -> printFriendships();
                 case "x", "X" -> {
                     System.out.println("\nExiting Admin Menu...");
                     return;

@@ -84,6 +84,17 @@ public class Network {
         usersRepo.remove(user);
     }
 
+    public void updateUser(String username, String newPassword, String newEmail) throws RepositoryException {
+        User user = usersRepo.find(username);
+        if (newPassword == null || newPassword.trim().length() == 0) {
+            newPassword = user.getPassword();
+        }
+        if (newEmail == null || newEmail.trim().length() == 0) {
+            newEmail = user.getEmail();
+        }
+        usersRepo.update(new User(username, newPassword, newEmail));
+    }
+
     /**
      * Gets all the friendships in the service.
      *

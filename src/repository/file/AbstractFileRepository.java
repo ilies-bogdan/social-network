@@ -21,6 +21,9 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         loadData();
     }
 
+    /**
+     * Loads the data from file into memory.
+     */
     private void loadData() {
         Path path = Paths.get(fileName);
         try {
@@ -36,6 +39,9 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         }
     }
 
+    /**
+     * Writes the data from memory to file.
+     */
     private void writeData() {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
@@ -50,6 +56,10 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         }
     }
 
+    /**
+     * Appends an entity to file.
+     * @param entity - The entity to append
+     */
     private void appendData(E entity) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
@@ -62,8 +72,18 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         }
     }
 
+    /**
+     * Gets a concrete Entity, being given its attributes.
+     * @param attributes - The attributes of the Entity as a List of String
+     * @return the Entity with the given attributes.
+     */
     public abstract E extractEntity(List<String> attributes);
 
+    /**
+     * Writes the Entity in a String format where the attributes are each separated by ','
+     * @param e - The Entity to be written in String format
+     * @return - The String format of the Entity
+     */
     public abstract String entityToStringFormat(E e);
 
     @Override
@@ -96,5 +116,12 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
     public E find(ID id) throws RepositoryException {
         loadData();
         return super.find(id);
+    }
+
+    @Override
+    public void update(E e) throws RepositoryException {
+        loadData();
+        super.update(e);
+        writeData();
     }
 }
