@@ -92,7 +92,19 @@ public class Network {
         if (newEmail == null || newEmail.trim().length() == 0) {
             newEmail = user.getEmail();
         }
-        usersRepo.update(new User(username, newPassword, newEmail));
+        User newUser = new User(username, newPassword, newEmail);
+        usersRepo.update(newUser);
+
+        // Update Friendships.
+        for (int i = 0; i < friendshipsRepo.size(); i++) {
+            Friendship friendship = friendshipsRepo.getAll().get(i);
+            if (friendship.getU1().equals(newUser)) {
+                friendshipsRepo.update(new Friendship(newUser, friendship.getU2()));
+            }
+            if (friendship.getU2().equals(newUser)) {
+                friendshipsRepo.update(new Friendship(friendship.getU1(), newUser));
+            }
+        }
     }
 
     /**

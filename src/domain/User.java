@@ -63,7 +63,7 @@ public class User implements HasID<String> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, email);
+        return Objects.hash(username);
     }
 
     @Override

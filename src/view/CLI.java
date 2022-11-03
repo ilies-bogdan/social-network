@@ -38,11 +38,11 @@ public class CLI {
     }
 
     private void addUser(Scanner scanner) {
-        System.out.println("Username: ");
+        System.out.print("Username: ");
         String username = scanner.nextLine();
-        System.out.println("Password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
-        System.out.println("Email: ");
+        System.out.print("Email: ");
         String email = scanner.nextLine();
 
         try {
@@ -54,7 +54,7 @@ public class CLI {
     }
 
     private void removeUser(Scanner scanner) {
-        System.out.println("Username: ");
+        System.out.print("Username: ");
         String username = scanner.nextLine();
 
         System.out.println("WARNING: Removing the user will remove all of its related friendships!");
@@ -94,9 +94,9 @@ public class CLI {
     }
 
     private void addFriendship(Scanner scanner) {
-        System.out.println("First User: ");
+        System.out.print("First User: ");
         String username1 = scanner.nextLine();
-        System.out.println("Second User: ");
+        System.out.print("Second User: ");
         String username2 = scanner.nextLine();
 
         try {
@@ -108,9 +108,9 @@ public class CLI {
     }
 
     private void removeFriendship(Scanner scanner) {
-        System.out.println("First User: ");
+        System.out.print("First User: ");
         String username1 = scanner.nextLine();
-        System.out.println("Second User: ");
+        System.out.print("Second User: ");
         String username2 = scanner.nextLine();
 
         try {

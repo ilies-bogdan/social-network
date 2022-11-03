@@ -11,7 +11,7 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
-        Network applicationService = new Network(new UserFileRepository("data/users_test.csv"),
+        Network applicationService = new Network(new UserFileRepository("data/users.csv"),
                 new UserValidator(),
                 new FriendshipFileRepository("data/friendships.csv"));
 
