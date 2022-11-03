@@ -88,7 +88,7 @@ public class CLI {
         try {
             appSrv.updateUser(username, newPassword, newEmail);
             System.out.println("\nUser updated!\n");
-        } catch (RepositoryException exception) {
+        } catch (ValidationException | RepositoryException exception) {
             System.out.println(exception.getMessage());
         }
     }

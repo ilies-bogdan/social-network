@@ -38,7 +38,6 @@ public class Network {
 
     /**
      * Gets the size.
-     *
      * @return number of users in the service.
      */
     public int usersSize() {
@@ -47,7 +46,6 @@ public class Network {
 
     /**
      * Gets all users in the service.
-     *
      * @return a list of all the users.
      */
     public List<User> getAllUsers() {
@@ -56,7 +54,6 @@ public class Network {
 
     /**
      * Creates, validates and stores a User.
-     *
      * @param username - String, can't be null
      * @param password - String, can't be null
      * @param email    - String, can't be null
@@ -71,7 +68,6 @@ public class Network {
 
     /**
      * Finds and removes a User and all of its related Friendships.
-     *
      * @param username - String, can't be null
      * @throws RepositoryException if the user does not exist.
      */
@@ -84,7 +80,15 @@ public class Network {
         usersRepo.remove(user);
     }
 
-    public void updateUser(String username, String newPassword, String newEmail) throws RepositoryException {
+    /**
+     * Updates a User's information.
+     * @param username - The username of the User
+     * @param newPassword - The new password (if empty keeps the old one)
+     * @param newEmail - The new email (if empty keeps the old one)
+     * @throws ValidationException if the new attributes are invalid.
+     * @throws RepositoryException if the User does not exist.
+     */
+    public void updateUser(String username, String newPassword, String newEmail) throws ValidationException, RepositoryException {
         User user = usersRepo.find(username);
         if (newPassword == null || newPassword.trim().length() == 0) {
             newPassword = user.getPassword();
@@ -93,6 +97,7 @@ public class Network {
             newEmail = user.getEmail();
         }
         User newUser = new User(username, newPassword, newEmail);
+        userVal.validate(newUser);
         usersRepo.update(newUser);
 
         // Update Friendships.
@@ -109,7 +114,6 @@ public class Network {
 
     /**
      * Gets all the friendships in the service.
-     *
      * @return a list of all the friendships.
      */
     public List<Friendship> getAllFriendships() {
@@ -118,7 +122,6 @@ public class Network {
 
     /**
      * Creates and stores a Friendship between two Users.
-     *
      * @param username1 - The first new friend
      * @param username2 - The second new friend
      * @throws RepositoryException if either of the two users has not been found.
@@ -132,7 +135,6 @@ public class Network {
 
     /**
      * Removes a friendship.
-     *
      * @param username1 - The first former friend
      * @param username2 - The second former friend
      * @throws RepositoryException if either of the two users has not been found.
