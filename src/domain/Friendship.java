@@ -1,5 +1,8 @@
 package domain;
 
+import utils.Constants;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -7,10 +10,12 @@ import java.util.Set;
 public class Friendship implements HasID<Set<User>> {
     private User u1;
     private User u2;
+    private LocalDateTime friendsFrom;
 
-    public Friendship(User u1, User u2) {
+    public Friendship(User u1, User u2, LocalDateTime friendsFrom) {
         this.u1 = u1;
         this.u2 = u2;
+        this.friendsFrom = friendsFrom;
     }
 
     public User getU1() {
@@ -27,6 +32,14 @@ public class Friendship implements HasID<Set<User>> {
 
     public void setU2(User u2) {
         this.u2 = u2;
+    }
+
+    public LocalDateTime getFriendsFrom() {
+        return friendsFrom;
+    }
+
+    public void setFriendsFrom(LocalDateTime friendsFrom) {
+        this.friendsFrom = friendsFrom;
     }
 
     @Override
@@ -48,7 +61,7 @@ public class Friendship implements HasID<Set<User>> {
 
     @Override
     public String toString() {
-        return u1.getUsername() + " and " + u2.getUsername() + " are friends!";
+        return u1.getUsername() + " and " + u2.getUsername() + " are friends since " + friendsFrom.format(Constants.DATE_TIME_FORMATTER) + "!";
     }
 
     @Override

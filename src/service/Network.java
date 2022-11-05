@@ -8,6 +8,7 @@ import repository.Repository;
 import utils.Graph;
 import domain.validators.Validator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -73,10 +74,21 @@ public class Network {
      */
     public void removeUser(String username) throws RepositoryException {
         User user = usersRepo.find(username);
-        for (User friend : user.getFriends()) {
-            Friendship friendship = new Friendship(user, friend);
-            friendshipsRepo.remove(friendship);
+        // Delete all Friendships of the User.
+        List<Friendship> userFriendships = new ArrayList<>();
+        for (Friendship friendship : friendshipsRepo.getAll()) {
+            if (friendship.getU1().equals(user) || friendship.getU2().equals(user)) {
+                // Add them to a list so that the iterator doesn't get confused when deleting.
+                userFriendships.add(friendship);
+            }
         }
+
+        if (!userFriendships.isEmpty()) {
+            for (Friendship friendship : userFriendships) {
+                friendshipsRepo.remove(friendship);
+            }
+        }
+
         usersRepo.remove(user);
     }
 
@@ -104,10 +116,10 @@ public class Network {
         for (int i = 0; i < friendshipsRepo.size(); i++) {
             Friendship friendship = friendshipsRepo.getAll().get(i);
             if (friendship.getU1().equals(newUser)) {
-                friendshipsRepo.update(new Friendship(newUser, friendship.getU2()));
+                friendshipsRepo.update(new Friendship(newUser, friendship.getU2(), friendship.getFriendsFrom()));
             }
             if (friendship.getU2().equals(newUser)) {
-                friendshipsRepo.update(new Friendship(friendship.getU1(), newUser));
+                friendshipsRepo.update(new Friendship(friendship.getU1(), newUser, friendship.getFriendsFrom()));
             }
         }
     }
@@ -129,7 +141,7 @@ public class Network {
     public void addFriendship(String username1, String username2) throws RepositoryException {
         User user1 = usersRepo.find(username1);
         User user2 = usersRepo.find(username2);
-        Friendship friendship = new Friendship(user1, user2);
+        Friendship friendship = new Friendship(user1, user2, LocalDateTime.now());
         friendshipsRepo.add(friendship);
     }
 
@@ -142,7 +154,7 @@ public class Network {
     public void removeFriendship(String username1, String username2) throws RepositoryException {
         User user1 = usersRepo.find(username1);
         User user2 = usersRepo.find(username2);
-        Friendship friendship = new Friendship(user1, user2);
+        Friendship friendship = new Friendship(user1, user2, null);
         friendshipsRepo.remove(friendship);
     }
 
