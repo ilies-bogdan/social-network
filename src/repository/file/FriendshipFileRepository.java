@@ -2,6 +2,7 @@ package repository.file;
 
 import domain.Friendship;
 import domain.User;
+import exceptions.CorruptedDataException;
 import utils.Constants;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,10 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
     }
 
     @Override
-    public Friendship extractEntity(List<String> attributes) {
+    public Friendship extractEntity(List<String> attributes) throws CorruptedDataException {
+        if (attributes.size() != 7) {
+            throw new CorruptedDataException("File data is corrupted!\n");
+        }
         return new Friendship(new User(attributes.get(0), attributes.get(1), attributes.get(2)),
                 new User(attributes.get(3), attributes.get(4), attributes.get(5)),
                 LocalDateTime.parse(attributes.get(6), Constants.DATE_TIME_FORMATTER));

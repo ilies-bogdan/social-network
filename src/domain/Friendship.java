@@ -11,6 +11,7 @@ public class Friendship implements HasID<Set<User>> {
     private User u1;
     private User u2;
     private LocalDateTime friendsFrom;
+    // TODO: Statuses for friendships (sent, accepted, rejected).
 
     public Friendship(User u1, User u2, LocalDateTime friendsFrom) {
         this.u1 = u1;

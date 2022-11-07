@@ -19,7 +19,7 @@ public class Network {
     private final Validator<User> userVal;
     private Repository<Friendship, Set<User>> friendshipsRepo;
 
-    // private static final UsersService usersSrv = new UsersService();
+    // private static final Network usersSrv = new Network();
 
     public Network(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
         this.usersRepo = usersRepo;

@@ -1,6 +1,7 @@
 package repository.file;
 
 import domain.HasID;
+import exceptions.CorruptedDataException;
 import exceptions.RepositoryException;
 import repository.memory.InMemoryRepository;
 
@@ -30,8 +31,13 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
             super.entities.clear();
             List<String> lines = Files.readAllLines(path);
             lines.forEach(line -> {
-                E entity = extractEntity(Arrays.asList(line.split(",")));
-                super.entities.add(entity);
+                try {
+                    E entity = extractEntity(Arrays.asList(line.split(",")));
+                    super.add(entity);
+                } catch (CorruptedDataException | RepositoryException exception) {
+                    exception.printStackTrace();
+                    System.exit(1);
+                }
             });
         } catch (IOException exception) {
             System.out.println("Data loading error.\n");
@@ -76,8 +82,9 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
      * Gets a concrete Entity, being given its attributes.
      * @param attributes - The attributes of the Entity as a List of String
      * @return the Entity with the given attributes.
+     * @throws CorruptedDataException if the data read from file is corrupted.
      */
-    public abstract E extractEntity(List<String> attributes);
+    public abstract E extractEntity(List<String> attributes) throws CorruptedDataException;
 
     /**
      * Writes the Entity in a String format where the attributes are each separated by ','

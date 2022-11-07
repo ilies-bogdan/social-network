@@ -49,7 +49,7 @@ public class CLI {
             appSrv.addUser(username, password, email);
             System.out.println("\nUser added.\n");
         } catch (RepositoryException | ValidationException exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
@@ -66,7 +66,7 @@ public class CLI {
                 appSrv.removeUser(username);
                 System.out.println("\nUser deleted.\n");
             } catch (RepositoryException exception) {
-                System.out.println(exception.getMessage());
+                exception.printStackTrace();
             }
         }
         else if (answer.equals("N") || answer.equals("n")) {
@@ -89,7 +89,7 @@ public class CLI {
             appSrv.updateUser(username, newPassword, newEmail);
             System.out.println("\nUser updated!\n");
         } catch (ValidationException | RepositoryException exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
@@ -103,7 +103,7 @@ public class CLI {
             appSrv.addFriendship(username1, username2);
             System.out.println("\nFriendship established!\n");
         } catch (RepositoryException exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
@@ -117,7 +117,7 @@ public class CLI {
             appSrv.removeFriendship(username1, username2);
             System.out.println("\nFriendship disbanded!\n");
         } catch (RepositoryException exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
@@ -142,17 +142,11 @@ public class CLI {
     }
 
     private void printUsers() {
-        List<User> users = appSrv.getAllUsers();
-        for (User user : users) {
-            System.out.println(user.toString());
-        }
+        appSrv.getAllUsers().forEach(System.out::println);
     }
 
     private void printFriendships() {
-        List<Friendship> friendships = appSrv.getAllFriendships();
-        for (Friendship friendship : friendships) {
-            System.out.println(friendship.toString());
-        }
+       appSrv.getAllFriendships().forEach(System.out::println);
     }
 
     private void runAdmin(Scanner scanner) {
