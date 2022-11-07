@@ -1,18 +1,17 @@
 package view;
 
-import domain.Friendship;
 import domain.User;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
-import service.Network;
+import service.NetworkService;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class CLI {
-    private Network appSrv;
+    private NetworkService appSrv;
 
-    public CLI(Network usersSrv) {
+    public CLI(NetworkService usersSrv) {
         this.appSrv = usersSrv;
     }
 
@@ -133,12 +132,12 @@ public class CLI {
     }
 
     private void mostSociableCommunity() {
-        List<User> commmunity = appSrv.mostSociableCommunity();
+        List<User> community = appSrv.mostSociableCommunity();
         System.out.println("\nMost sociable community is:");
-        for (int i = 0; i < commmunity.size() - 1; i++) {
-            System.out.print(commmunity.get(i).toString() + " -> ");
+        for (int i = 0; i < community.size() - 1; i++) {
+            System.out.print(community.get(i).toString() + " -> ");
         }
-        System.out.println(commmunity.get(commmunity.size() - 1));
+        System.out.println(community.get(community.size() - 1));
     }
 
     private void printUsers() {

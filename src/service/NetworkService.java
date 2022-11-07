@@ -14,28 +14,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Network {
+public class NetworkService {
     private Repository<User, String> usersRepo;
-    private final Validator<User> userVal;
+    private Validator<User> userVal;
     private Repository<Friendship, Set<User>> friendshipsRepo;
 
-    // private static final Network usersSrv = new Network();
+    private static final NetworkService network = new NetworkService();
 
-    public Network(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
-        this.usersRepo = usersRepo;
-        this.userVal = userVal;
-        this.friendshipsRepo = friendshipsRepo;
+    private NetworkService() {}
+
+    /**
+     * Singleton Design Pattern
+     * @return a single instance of NetworkService.
+     */
+    public static NetworkService getInstance() {
+        return network;
     }
 
-//    /**
-//     * Singleton Design Pattern
-//     * @param usersRepo - A repository that the service has access to
-//     * @return a single instance of UserService.
-//     */
-//    public static UsersService getInstance(Repository<User, String> usersRepo) {
-//        this.usersRepo = usersRepo;
-//        return usersSrv;
-//    }
+    public void initialize(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
+        network.usersRepo = usersRepo;
+        network.userVal = userVal;
+        network.friendshipsRepo = friendshipsRepo;
+    }
 
     /**
      * Gets the size.
@@ -182,7 +182,16 @@ public class Network {
         }
     }
 
-    private void mapNetworkToGraph(int[][] adj, int vertexCount) {
+    /**
+     * Maps the Network to an undirected graph, so that the number of communities in the
+     * Network is equal to the number of connected components in the graph and then
+     * computes that number.
+     * @return the adjacency matrix of the graph.
+     */
+    private int[][] mapNetworkToGraph() {
+        int vertexCount = usersRepo.size();
+        int[][] adj = new int[vertexCount][vertexCount];
+        initAdjacencyMatrix(adj,vertexCount);
         List<User> users = usersRepo.getAll();
         for (int i = 0; i < vertexCount; i++) {
             for (int j = 0; j < vertexCount; j++) {
@@ -191,30 +200,26 @@ public class Network {
                     friendshipID.add(users.get(i));
                     friendshipID.add(users.get(j));
                     friendshipsRepo.find(friendshipID);
-                    // If find is successfull, update the adjacency matrix with 1.
+                    // If find is successful, update the adjacency matrix with 1.
                     adj[i][j] = 1;
                     adj[j][i] = 1;
-                } catch (RepositoryException exception) {continue;}
+                } catch (RepositoryException ignored) {}
             }
         }
+        return adj;
     }
 
     /**
-     * Maps the Network to an undirected graph, so that the number of communities in the
-     * Network is equal to the number of connected components in the graph and then
-     * computes that number.
+     * Gets the number of communities in the Network
+     * (number of connected components in the graph).
      * @return the number of communities.
      */
     public int getNumberOfCommunities() {
-        List<User> users = usersRepo.getAll();
-        int vertexCount = users.size();
+        int vertexCount = usersRepo.size();
 
-        int[][] adj = new int[vertexCount][vertexCount];
-        initAdjacencyMatrix(adj,vertexCount);
+        int[][] adj = mapNetworkToGraph();
         boolean[] visited = new boolean[vertexCount];
         initBooleanWithFalse(visited, vertexCount);
-
-        mapNetworkToGraph(adj, vertexCount);
 
         // Find number of connected components.
         int communitiesCount = 0;
@@ -236,14 +241,11 @@ public class Network {
      */
     public List<User> mostSociableCommunity() {
         List<User> users = usersRepo.getAll();
-        int vertexCount = users.size();
+        int vertexCount = usersRepo.size();
 
-        int[][] adj = new int[vertexCount][vertexCount];
-        initAdjacencyMatrix(adj, vertexCount);
+        int[][] adj = mapNetworkToGraph();
         boolean[] visited = new boolean[vertexCount];
         initBooleanWithFalse(visited, vertexCount);
-
-        mapNetworkToGraph(adj, vertexCount);
 
         boolean[] startedBFSFrom = new boolean[vertexCount];
         initBooleanWithFalse(startedBFSFrom, vertexCount);

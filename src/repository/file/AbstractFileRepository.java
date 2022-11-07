@@ -1,12 +1,17 @@
 package repository.file;
 
 import domain.HasID;
+import domain.User;
+import domain.validators.UserValidator;
+import domain.validators.Validator;
 import exceptions.CorruptedDataException;
 import exceptions.RepositoryException;
+import exceptions.ValidationException;
 import repository.memory.InMemoryRepository;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLOutput;
@@ -22,9 +27,6 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
         loadData();
     }
 
-    /**
-     * Loads the data from file into memory.
-     */
     private void loadData() {
         Path path = Paths.get(fileName);
         try {
@@ -34,13 +36,12 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
                 try {
                     E entity = extractEntity(Arrays.asList(line.split(",")));
                     super.add(entity);
-                } catch (CorruptedDataException | RepositoryException exception) {
+                } catch (CorruptedDataException | ValidationException | RepositoryException exception) {
                     exception.printStackTrace();
                     System.exit(1);
                 }
             });
         } catch (IOException exception) {
-            System.out.println("Data loading error.\n");
             exception.printStackTrace();
         }
     }
@@ -84,7 +85,7 @@ public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends In
      * @return the Entity with the given attributes.
      * @throws CorruptedDataException if the data read from file is corrupted.
      */
-    public abstract E extractEntity(List<String> attributes) throws CorruptedDataException;
+    public abstract E extractEntity(List<String> attributes) throws CorruptedDataException, ValidationException;
 
     /**
      * Writes the Entity in a String format where the attributes are each separated by ','

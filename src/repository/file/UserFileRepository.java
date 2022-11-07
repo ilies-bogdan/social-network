@@ -1,7 +1,10 @@
 package repository.file;
 
 import domain.User;
+import domain.validators.UserValidator;
+import domain.validators.Validator;
 import exceptions.CorruptedDataException;
+import exceptions.ValidationException;
 
 import java.util.List;
 
@@ -11,11 +14,14 @@ public class UserFileRepository extends AbstractFileRepository<User, String> {
     }
 
     @Override
-    public User extractEntity(List<String> attributes) throws CorruptedDataException {
+    public User extractEntity(List<String> attributes) throws CorruptedDataException, ValidationException {
         if (attributes.size() != 3) {
             throw new CorruptedDataException("File data is corrupted!\n");
         }
-        return new User(attributes.get(0), attributes.get(1), attributes.get(2));
+        User user = new User(attributes.get(0), attributes.get(1), attributes.get(2));
+        Validator<User> userValidator = new UserValidator();
+        userValidator.validate(user);
+        return user;
     }
 
     @Override
