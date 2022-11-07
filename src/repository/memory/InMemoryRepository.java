@@ -1,13 +1,13 @@
 package repository.memory;
 
-import domain.HasID;
+import domain.Entity;
 import exceptions.RepositoryException;
 import repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InMemoryRepository<E extends HasID<ID>, ID> implements Repository<E, ID> {
+public class InMemoryRepository<E extends Entity<ID>, ID> implements Repository<E, ID> {
     protected List<E> entities;
 
     public InMemoryRepository() {

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class NetworkService {
-    private Repository<User, String> usersRepo;
+    private Repository<User, Long> usersRepo;
     private Validator<User> userVal;
     private Repository<Friendship, Set<User>> friendshipsRepo;
 
@@ -30,7 +30,7 @@ public class NetworkService {
         return network;
     }
 
-    public void initialize(Repository<User, String> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
+    public void initialize(Repository<User, Long> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
         network.usersRepo = usersRepo;
         network.userVal = userVal;
         network.friendshipsRepo = friendshipsRepo;
@@ -65,6 +65,7 @@ public class NetworkService {
         int passwordCode = Objects.hash(password + salt);
         // To verify for password: Objects.hash(newPassword + user.getSalt())
         User user = new User(username, passwordCode, salt, email);
+        user.setID(Math.abs((long) Objects.hash(username)));
         userVal.validate(user);
         usersRepo.add(user);
     }
@@ -75,7 +76,7 @@ public class NetworkService {
      * @throws RepositoryException if the user does not exist.
      */
     public void removeUser(String username) throws RepositoryException {
-        User user = usersRepo.find(username);
+        User user = usersRepo.find(Math.abs((long) Objects.hash(username)));
         // Delete all Friendships of the User.
         List<Friendship> userFriendships = new ArrayList<>();
         for (Friendship friendship : friendshipsRepo.getAll()) {
@@ -103,7 +104,7 @@ public class NetworkService {
      * @throws RepositoryException if the User does not exist.
      */
     public void updateUser(String username, String newPassword, String newEmail) throws ValidationException, RepositoryException {
-        User user = usersRepo.find(username);
+        User user = usersRepo.find(Math.abs((long) Objects.hash(username)));
         String salt = RandomString.getRandomString(Constants.SALT_SIZE);
         int passwordCode = Objects.hash(newPassword + salt);
         if (newPassword == null || newPassword.trim().length() == 0) {
@@ -144,8 +145,8 @@ public class NetworkService {
      * @throws RepositoryException if either of the two users has not been found.
      */
     public void addFriendship(String username1, String username2) throws RepositoryException {
-        User user1 = usersRepo.find(username1);
-        User user2 = usersRepo.find(username2);
+        User user1 = usersRepo.find(Math.abs((long) Objects.hash(username1)));
+        User user2 = usersRepo.find(Math.abs((long) Objects.hash(username2)));
         Friendship friendship = new Friendship(user1, user2, LocalDateTime.now());
         friendshipsRepo.add(friendship);
     }
@@ -157,8 +158,8 @@ public class NetworkService {
      * @throws RepositoryException if either of the two users has not been found.
      */
     public void removeFriendship(String username1, String username2) throws RepositoryException {
-        User user1 = usersRepo.find(username1);
-        User user2 = usersRepo.find(username2);
+        User user1 = usersRepo.find(Math.abs((long) Objects.hash(username1)));
+        User user2 = usersRepo.find(Math.abs((long) Objects.hash(username2)));
         Friendship friendship = new Friendship(user1, user2, null);
         friendshipsRepo.remove(friendship);
     }

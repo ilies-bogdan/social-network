@@ -2,7 +2,8 @@ package domain;
 
 import java.util.Objects;
 
-public class User implements HasID<String> {
+public class User implements Entity<Long> {
+    private Long id;
     private String username;
     private int passwordCode;
     private String salt;
@@ -61,7 +62,7 @@ public class User implements HasID<String> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(username);
+        return Objects.hash(id, username);
     }
 
     @Override
@@ -70,12 +71,12 @@ public class User implements HasID<String> {
     }
 
     @Override
-    public String getID() {
-        return username;
+    public Long getID() {
+        return id;
     }
 
     @Override
-    public void setID(String id) {
-        this.username = id;
+    public void setID(Long id) {
+        this.id = id;
     }
 }

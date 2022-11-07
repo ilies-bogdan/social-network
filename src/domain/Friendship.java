@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Friendship implements HasID<Set<User>> {
+public class Friendship implements Entity<Set<User>> {
     private User u1;
     private User u2;
     private LocalDateTime friendsFrom;

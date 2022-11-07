@@ -1,9 +1,6 @@
 package repository.file;
 
-import domain.HasID;
-import domain.User;
-import domain.validators.UserValidator;
-import domain.validators.Validator;
+import domain.Entity;
 import exceptions.CorruptedDataException;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
@@ -11,14 +8,12 @@ import repository.memory.InMemoryRepository;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractFileRepository<E extends HasID<ID>, ID> extends InMemoryRepository<E, ID> {
+public abstract class AbstractFileRepository<E extends Entity<ID>, ID> extends InMemoryRepository<E, ID> {
     String fileName;
 
     public AbstractFileRepository(String fileName) {
