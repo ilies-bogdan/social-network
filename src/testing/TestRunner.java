@@ -7,13 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TestRunner {
-    private List<User> createUsers() {
-        User u1 = new User("Bogdan", "qwerty", "iliesbogdan147@gmail.com");
-        User u2 = new User("Cristi", "123456", "playnt98@gmail.com");
-        User u3 = new User("Adi", "asdfgh", "adiromanov44@gmail.com");
-
-        return new ArrayList<>(Arrays.asList(u1, u2, u3));
-    }
+//    private List<User> createUsers() {
+//        User u1 = new User("Bogdan", "qwerty", "iliesbogdan147@gmail.com");
+//        User u2 = new User("Cristi", "123456", "playnt98@gmail.com");
+//        User u3 = new User("Adi", "asdfgh", "adiromanov44@gmail.com");
+//
+//        return new ArrayList<>(Arrays.asList(u1, u2, u3));
+//    }
 
 //    private void runUsersMemoryRepositoryTests() {
 //        List<User> userList = createUsers();

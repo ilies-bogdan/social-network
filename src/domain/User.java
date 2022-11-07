@@ -4,12 +4,14 @@ import java.util.Objects;
 
 public class User implements HasID<String> {
     private String username;
-    private String password;
+    private int passwordCode;
+    private String salt;
     private String email;
 
-    public User(String username, String password, String email) {
+    public User(String username, int password, String salt, String email) {
         this.username = username;
-        this.password = password;
+        this.passwordCode = password;
+        this.salt = salt;
         this.email = email;
     }
 
@@ -21,12 +23,20 @@ public class User implements HasID<String> {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public int getPasswordCode() {
+        return passwordCode;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordCode(int passwordCode) {
+        this.passwordCode = passwordCode;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public String getEmail() {

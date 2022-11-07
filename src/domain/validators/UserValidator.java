@@ -37,11 +37,11 @@ public class UserValidator implements Validator<User> {
             }
         }
 
-        if (user.getPassword() == null || user.getPassword().trim().length() == 0) {
+        if (String.valueOf(user.getPasswordCode()) == null || String.valueOf(user.getPasswordCode()) .trim().length() == 0) {
             message += "Password can not be empty!\n";
-        } else if (user.getPassword().contains(",")) {
+        } else if (String.valueOf(user.getPasswordCode()) .contains(",")) {
             message += "Not allowed character in password!\n";
-        } else if (user.getPassword().length() < 8) {
+        } else if (String.valueOf(user.getPasswordCode()) .length() < 8) {
             message += "Password must be at least 8 characters long!\n";
         }
 

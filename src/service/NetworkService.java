@@ -5,8 +5,10 @@ import domain.User;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
 import repository.Repository;
+import utils.Constants;
 import utils.Graph;
 import domain.validators.Validator;
+import utils.RandomString;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -59,7 +61,10 @@ public class NetworkService {
      * @throws ValidationException if any of the user attributes are empty or if the Password is too short.
      */
     public void addUser(String username, String password, String email) throws RepositoryException, ValidationException {
-        User user = new User(username, password, email);
+        String salt = RandomString.getRandomString(Constants.SALT_SIZE);
+        int passwordCode = Objects.hash(password + salt);
+        // To verify for password: Objects.hash(newPassword + user.getSalt())
+        User user = new User(username, passwordCode, salt, email);
         userVal.validate(user);
         usersRepo.add(user);
     }
@@ -99,13 +104,16 @@ public class NetworkService {
      */
     public void updateUser(String username, String newPassword, String newEmail) throws ValidationException, RepositoryException {
         User user = usersRepo.find(username);
+        String salt = RandomString.getRandomString(Constants.SALT_SIZE);
+        int passwordCode = Objects.hash(newPassword + salt);
         if (newPassword == null || newPassword.trim().length() == 0) {
-            newPassword = user.getPassword();
+            salt = user.getSalt();
+            passwordCode = user.getPasswordCode();
         }
         if (newEmail == null || newEmail.trim().length() == 0) {
             newEmail = user.getEmail();
         }
-        User newUser = new User(username, newPassword, newEmail);
+        User newUser = new User(username, passwordCode, salt, newEmail);
         userVal.validate(newUser);
         usersRepo.update(newUser);
 

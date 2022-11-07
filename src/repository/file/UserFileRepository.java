@@ -15,10 +15,10 @@ public class UserFileRepository extends AbstractFileRepository<User, String> {
 
     @Override
     public User extractEntity(List<String> attributes) throws CorruptedDataException, ValidationException {
-        if (attributes.size() != 3) {
+        if (attributes.size() != 4) {
             throw new CorruptedDataException("File data is corrupted!\n");
         }
-        User user = new User(attributes.get(0), attributes.get(1), attributes.get(2));
+        User user = new User(attributes.get(0), Integer.parseInt(attributes.get(1)), attributes.get(2), attributes.get(3));
         Validator<User> userValidator = new UserValidator();
         userValidator.validate(user);
         return user;
@@ -26,6 +26,6 @@ public class UserFileRepository extends AbstractFileRepository<User, String> {
 
     @Override
     public String entityToStringFormat(User user) {
-        return user.getUsername() + "," + user.getPassword() + "," + user.getEmail();
+        return user.getUsername() + "," + user.getPasswordCode() + "," + user.getSalt() +  "," + user.getEmail();
     }
 }

@@ -28,21 +28,21 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
 
     @Override
     public Friendship extractEntity(List<String> attributes) throws CorruptedDataException, ValidationException {
-        if (attributes.size() != 7) {
+        if (attributes.size() != 9) {
             throw new CorruptedDataException("File data is corrupted!\n");
         }
         Validator<User> userValidator = new UserValidator();
-        User u1 = new User(attributes.get(0), attributes.get(1), attributes.get(2));
+        User u1 = new User(attributes.get(0), Integer.parseInt(attributes.get(1)), attributes.get(2), attributes.get(3));
         userValidator.validate(u1);
-        User u2 = new User(attributes.get(3), attributes.get(4), attributes.get(5));
+        User u2 = new User(attributes.get(4), Integer.parseInt(attributes.get(5)), attributes.get(6), attributes.get(7));
         userValidator.validate(u2);
-        return new Friendship(u1, u2 , LocalDateTime.parse(attributes.get(6), Constants.DATE_TIME_FORMATTER));
+        return new Friendship(u1, u2 , LocalDateTime.parse(attributes.get(8), Constants.DATE_TIME_FORMATTER));
     }
 
     @Override
     public String entityToStringFormat(Friendship friendship) {
-        return friendship.getU1().getUsername() + "," + friendship.getU1().getPassword() + "," + friendship.getU1().getEmail() + "," +
-                friendship.getU2().getUsername() + "," + friendship.getU2().getPassword() + "," + friendship.getU2().getEmail() + "," +
+        return friendship.getU1().getUsername() + "," + friendship.getU1().getPasswordCode() + "," +friendship.getU1().getSalt() + "," + friendship.getU1().getEmail() + "," +
+                friendship.getU2().getUsername() + "," + friendship.getU2().getPasswordCode() + "," + friendship.getU2().getSalt() + "," + friendship.getU2().getEmail() + "," +
                 friendship.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER);
     }
 }
