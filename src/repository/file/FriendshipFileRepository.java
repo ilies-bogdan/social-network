@@ -18,6 +18,11 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
         super(fileName);
     }
 
+    /**
+     * Adds a Friendship object to the Repository.
+     * @param friendship - the Friendship to be added
+     * @throws RepositoryException if both Users of the Friendship are the same.
+     */
     @Override
     public void add(Friendship friendship) throws RepositoryException {
         if (friendship.getU1().equals(friendship.getU2())) {

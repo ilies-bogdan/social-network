@@ -115,6 +115,7 @@ public class NetworkService {
             newEmail = user.getEmail();
         }
         User newUser = new User(username, passwordCode, salt, newEmail);
+        newUser.setID(user.getID());
         userVal.validate(newUser);
         usersRepo.update(newUser);
 

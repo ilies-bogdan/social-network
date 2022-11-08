@@ -1,3 +1,5 @@
+import repository.database.FriendshipDBRepository;
+import repository.database.UserDBRepository;
 import repository.file.FriendshipFileRepository;
 import repository.file.UserFileRepository;
 import service.NetworkService;
@@ -10,6 +12,7 @@ public class Main {
         TestRunner testRunner = new TestRunner();
         testRunner.runTests();
 
+        String url = "jdbc:postgresql://localhost:5432/social-network";
         NetworkService networkService = NetworkService.getInstance();
         networkService.initialize(new UserFileRepository("data/test/users_test.csv"),
                 new UserValidator(),
