@@ -6,7 +6,6 @@ import domain.validators.UserValidator;
 import domain.validators.Validator;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
-import org.postgresql.util.PSQLException;
 import repository.Repository;
 import utils.Constants;
 
@@ -35,10 +34,12 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     @Override
     public List<Friendship> getAll() {
         List<Friendship> friendships = new ArrayList<>();
-        String sql = "SELECT * FROM friendships";
+        String sql = "SELECT id_user_01, username_user_01, password_code_user_01, salt_user_01, email_user_01, " +
+                "id_user_02, username_user_02, password_code_user_02, salt_user_02, email_user_02, to_char(friends_from, ?) FROM friendships";
         try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, Constants.DATE_TIME_FORMAT_POSTGRESQL);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 long id1 = resultSet.getLong("id_user_01");
                 String username1 = resultSet.getString("username_user_01");
@@ -76,7 +77,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     public void add(Friendship entity) throws RepositoryException {
         String sql = "INSERT INTO friendships (id_user_01, username_user_01, password_code_user_01, salt_user_01, email_user_01," +
                 "id_user_02, username_user_02, password_code_user_02, salt_user_02, email_user_02, friends_from)" +
-                "VALUES (?::int, ?, ?::int, ?, ?, ?::int, ?, ?::int, ?, ?, ?::date)";
+                "VALUES (?::int, ?, ?::int, ?, ?, ?::int, ?, ?::int, ?, ?, to_timestamp(?, ?)::timestamp)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getU1().getID()));
@@ -92,6 +93,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
             statement.setString(10, entity.getU2().getEmail());
 
             statement.setString(11, entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
+            statement.setString(12, Constants.DATE_TIME_FORMAT_POSTGRESQL);
 
             statement.executeUpdate();
         } catch (SQLException exception) {
