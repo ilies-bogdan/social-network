@@ -85,7 +85,7 @@ public class InMemoryRepository<E extends Entity<ID>, ID> implements Repository<
      */
     public void update(E entity) throws RepositoryException {
         for (int i = 0; i < entities.size(); i++) {
-            if (entities.get(i).getID().equals(entity.getID())) {
+            if (entities.get(i).equals(entity)) {
                 entities.set(i, entity);
                 return;
             }

@@ -1,22 +1,23 @@
-import repository.database.FriendshipDBRepository;
-import repository.database.UserDBRepository;
-import repository.file.FriendshipFileRepository;
-import repository.file.UserFileRepository;
+import repository.factory.FriendshipRepositoryFactory;
+import repository.factory.RepositoryStrategy;
+import repository.factory.UserRepositoryFactory;
 import service.NetworkService;
-import testing.TestRunner;
 import domain.validators.UserValidator;
 import view.CLI;
 
 public class Main {
     public static void main(String[] args) {
-        TestRunner testRunner = new TestRunner();
-        testRunner.runTests();
+        String userFileName = "data/test/users_test.csv";
+        String friendshipsFileName = "data/test/friendships_test.csv";
 
         String url = "jdbc:postgresql://localhost:5432/social-network";
+        String username = "postgres";
+        String password = "postgres";
+
         NetworkService networkService = NetworkService.getInstance();
-        networkService.initialize(new UserFileRepository("data/test/users_test.csv"),
+        networkService.initialize(UserRepositoryFactory.getInstance().createRepository(RepositoryStrategy.file, userFileName, null, null, null),
                 new UserValidator(),
-                new FriendshipFileRepository("data/test/friendships_test.csv"));
+                FriendshipRepositoryFactory.getInstance().createRepository(RepositoryStrategy.file, friendshipsFileName, null, null, null));
 
         CLI cli = new CLI(networkService);
         cli.run();
