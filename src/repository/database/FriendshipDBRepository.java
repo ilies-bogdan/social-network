@@ -34,8 +34,22 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     @Override
     public List<Friendship> getAll() {
         List<Friendship> friendships = new ArrayList<>();
-        String sql = "SELECT id_user_01, username_user_01, password_code_user_01, salt_user_01, email_user_01, " +
-                "id_user_02, username_user_02, password_code_user_02, salt_user_02, email_user_02, to_char(friends_from, ?) FROM friendships";
+        String sql = """
+                SELECT U1.id AS id_user_01,
+                U1.username AS username_user_01,
+                U1.password_code AS password_code_user_01,
+                U1.salt AS salt_user_01,
+                U1.email AS email_user_01,
+                U2.id AS id_user_02,
+                U2.username AS username_user_02,
+                U2.password_code AS password_code_user_02,
+                U2.salt AS salt_user_02,
+                U2.email AS email_user_02,
+                to_char(F.friends_from, ?) AS friends_from
+                FROM friendships_test F
+                INNER JOIN users U1 ON F.id_user_01 = U1.id
+                INNER JOIN users U2 ON U2.id = F.id_user_02
+                """;
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, Constants.DATE_TIME_FORMAT_POSTGRESQL);
@@ -73,28 +87,43 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         return friendships;
     }
 
+//    @Override
+//    public void add(Friendship entity) throws RepositoryException {
+//        String sql = "INSERT INTO friendships (id_user_01, username_user_01, password_code_user_01, salt_user_01, email_user_01," +
+//                "id_user_02, username_user_02, password_code_user_02, salt_user_02, email_user_02, friends_from)" +
+//                "VALUES (?::int, ?, ?::int, ?, ?, ?::int, ?, ?::int, ?, ?, to_timestamp(?, ?)::timestamp)";
+//        try(Connection connection = DriverManager.getConnection(url, username, password);
+//            PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setString(1, String.valueOf(entity.getU1().getID()));
+//            statement.setString(2, entity.getU1().getUsername());
+//            statement.setString(3, String.valueOf(entity.getU1().getPasswordCode()));
+//            statement.setString(4, entity.getU1().getSalt());
+//            statement.setString(5, entity.getU1().getEmail());
+//
+//            statement.setString(6, String.valueOf(entity.getU2().getID()));
+//            statement.setString(7, entity.getU2().getUsername());
+//            statement.setString(8, String.valueOf(entity.getU2().getPasswordCode()));
+//            statement.setString(9, entity.getU2().getSalt());
+//            statement.setString(10, entity.getU2().getEmail());
+//
+//            statement.setString(11, entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
+//            statement.setString(12, Constants.DATE_TIME_FORMAT_POSTGRESQL);
+//
+//            statement.executeUpdate();
+//        } catch (SQLException exception) {
+//            exception.printStackTrace();
+//        }
+//    }
+
     @Override
     public void add(Friendship entity) throws RepositoryException {
-        String sql = "INSERT INTO friendships (id_user_01, username_user_01, password_code_user_01, salt_user_01, email_user_01," +
-                "id_user_02, username_user_02, password_code_user_02, salt_user_02, email_user_02, friends_from)" +
-                "VALUES (?::int, ?, ?::int, ?, ?, ?::int, ?, ?::int, ?, ?, to_timestamp(?, ?)::timestamp)";
+        String sql = "INSERT INTO friendships_test (id_user_01, id_user_02, friends_from) VALUES (?::int, ?::int, to_timestamp(?, ?)::timestamp)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getU1().getID()));
-            statement.setString(2, entity.getU1().getUsername());
-            statement.setString(3, String.valueOf(entity.getU1().getPasswordCode()));
-            statement.setString(4, entity.getU1().getSalt());
-            statement.setString(5, entity.getU1().getEmail());
-
-            statement.setString(6, String.valueOf(entity.getU2().getID()));
-            statement.setString(7, entity.getU2().getUsername());
-            statement.setString(8, String.valueOf(entity.getU2().getPasswordCode()));
-            statement.setString(9, entity.getU2().getSalt());
-            statement.setString(10, entity.getU2().getEmail());
-
-            statement.setString(11, entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
-            statement.setString(12, Constants.DATE_TIME_FORMAT_POSTGRESQL);
-
+            statement.setString(2, String.valueOf(entity.getU2().getID()));
+            statement.setString(3, entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
+            statement.setString(4, Constants.DATE_TIME_FORMAT_POSTGRESQL);
             statement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -103,11 +132,13 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
     @Override
     public void remove(Friendship entity) throws RepositoryException {
-        String sql = "DELETE FROM friendships WHERE friendships.id_user_01 = ?::int AND friendships.id_user_02 = ?::int";
+        String sql = "DELETE FROM friendships_test F WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getU1().getID()));
             statement.setString(2, String.valueOf(entity.getU2().getID()));
+            statement.setString(3, String.valueOf(entity.getU2().getID()));
+            statement.setString(4, String.valueOf(entity.getU1().getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -116,12 +147,30 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
     @Override
     public Friendship find(Set<User> id) throws RepositoryException {
-        String sql = "SELECT * FROM friendships WHERE friendships.id_user_01 = ?::int AND friendships.id_user_02 = ?::int";
+        String sql = """
+                SELECT U1.id AS id_user_01,
+                U1.username AS username_user_01,
+                U1.password_code AS password_code_user_01,
+                U1.salt AS salt_user_01,
+                U1.email AS email_user_01,
+                U2.id AS id_user_02,
+                U2.username AS username_user_02,
+                U2.password_code AS password_code_user_02,
+                U2.salt AS salt_user_02,
+                U2.email AS email_user_02,
+                to_char(F.friends_from, ?) AS friends_from
+                FROM friendships_test F
+                INNER JOIN users U1 ON F.id_user_01 = U1.id
+                INNER JOIN users U2 ON U2.id = F.id_user_02
+                WHERE U1.id = ?::int AND U2.id = ?::int OR U1.id = ?::int AND U2.id = ?::int
+                """;
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             List<User> users = new ArrayList<>(id);
             statement.setString(1, String.valueOf(users.get(0).getID()));
             statement.setString(2, String.valueOf(users.get(1).getID()));
+            statement.setString(3, String.valueOf(users.get(1).getID()));
+            statement.setString(4, String.valueOf(users.get(0).getID()));
             ResultSet resultSet = statement.executeQuery();
 
             if (!resultSet.next()) {
@@ -155,20 +204,20 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
     @Override
     public void update(Friendship entity) throws RepositoryException {
-        String sql = "UPDATE friendships SET password_code_user_01 = ?::int, salt_user_01 = ?, email_user_01 = ?," +
-                " password_code_user_02 = ?::int, salt_user_02 = ?, email_user_02 = ? " +
-                "WHERE friendships.id_user_01 = ?::int AND friendships.id_user_02 = ?::int";
-        try(Connection connection = DriverManager.getConnection(url, username, password);
-            PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, String.valueOf(entity.getU1().getPasswordCode()));
-            statement.setString(2, entity.getU1().getSalt());
-            statement.setString(3, entity.getU1().getEmail());
-            statement.setString(4, String.valueOf(entity.getU2().getPasswordCode()));
-            statement.setString(5, entity.getU2().getSalt());
-            statement.setString(6, entity.getU2().getEmail());
-            statement.executeUpdate();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
+//        String sql = "UPDATE friendships SET password_code_user_01 = ?::int, salt_user_01 = ?, email_user_01 = ?," +
+//                " password_code_user_02 = ?::int, salt_user_02 = ?, email_user_02 = ? " +
+//                "WHERE friendships.id_user_01 = ?::int AND friendships.id_user_02 = ?::int";
+//        try(Connection connection = DriverManager.getConnection(url, username, password);
+//            PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setString(1, String.valueOf(entity.getU1().getPasswordCode()));
+//            statement.setString(2, entity.getU1().getSalt());
+//            statement.setString(3, entity.getU1().getEmail());
+//            statement.setString(4, String.valueOf(entity.getU2().getPasswordCode()));
+//            statement.setString(5, entity.getU2().getSalt());
+//            statement.setString(6, entity.getU2().getEmail());
+//            statement.executeUpdate();
+//        } catch (SQLException exception) {
+//            exception.printStackTrace();
+//        }
     }
 }
