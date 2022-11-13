@@ -15,9 +15,9 @@ public class Main {
         String password = "postgres";
 
         NetworkService networkService = NetworkService.getInstance();
-        networkService.initialize(UserRepositoryFactory.getInstance().createRepository(RepositoryStrategy.database, null, url, username, password),
+        networkService.initialize(UserRepositoryFactory.getInstance().createRepository(RepositoryStrategy.file, userFileName, null, null, null),
                 new UserValidator(),
-                FriendshipRepositoryFactory.getInstance().createRepository(RepositoryStrategy.database, null, url, username, password));
+                FriendshipRepositoryFactory.getInstance().createRepository(RepositoryStrategy.file, friendshipsFileName, null, null, null));
 
         CLI cli = new CLI(networkService);
         cli.run();

@@ -5,7 +5,6 @@ import domain.validators.UserValidator;
 import domain.validators.Validator;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
-import org.postgresql.util.PSQLException;
 import repository.Repository;
 
 import java.sql.*;

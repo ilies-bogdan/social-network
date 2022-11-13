@@ -167,10 +167,11 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             List<User> users = new ArrayList<>(id);
-            statement.setString(1, String.valueOf(users.get(0).getID()));
-            statement.setString(2, String.valueOf(users.get(1).getID()));
+            statement.setString(1, Constants.DATE_TIME_FORMAT_POSTGRESQL);
+            statement.setString(2, String.valueOf(users.get(0).getID()));
             statement.setString(3, String.valueOf(users.get(1).getID()));
-            statement.setString(4, String.valueOf(users.get(0).getID()));
+            statement.setString(4, String.valueOf(users.get(1).getID()));
+            statement.setString(5, String.valueOf(users.get(0).getID()));
             ResultSet resultSet = statement.executeQuery();
 
             if (!resultSet.next()) {
