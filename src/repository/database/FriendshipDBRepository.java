@@ -46,7 +46,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
                 U2.salt AS salt_user_02,
                 U2.email AS email_user_02,
                 to_char(F.friends_from, ?) AS friends_from
-                FROM friendships_test F
+                FROM friendships F
                 INNER JOIN users U1 ON F.id_user_01 = U1.id
                 INNER JOIN users U2 ON U2.id = F.id_user_02
                 """;
@@ -69,13 +69,14 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
                 LocalDateTime friendsFrom = LocalDateTime.parse(resultSet.getString("friends_from"), Constants.DATE_TIME_FORMATTER);
 
+                Validator<User> userValidator = new UserValidator();
                 User u1 = new User(username1, passwordCode1, salt1, email1);
                 u1.setID(id1);
+                userValidator.validate(u1);
                 User u2 = new User(username2, passwordCode2, salt2, email2);
                 u2.setID(id2);
-                Validator<User> userValidator = new UserValidator();
-                userValidator.validate(u1);
                 userValidator.validate(u2);
+
                 Friendship friendship = new Friendship(u1, u2, friendsFrom);
                 friendships.add(friendship);
             }
@@ -117,7 +118,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
     @Override
     public void add(Friendship entity) throws RepositoryException {
-        String sql = "INSERT INTO friendships_test (id_user_01, id_user_02, friends_from) VALUES (?::int, ?::int, to_timestamp(?, ?)::timestamp)";
+        String sql = "INSERT INTO friendships (id_user_01, id_user_02, friends_from) VALUES (?::int, ?::int, to_timestamp(?, ?)::timestamp)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getU1().getID()));
@@ -132,7 +133,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
 
     @Override
     public void remove(Friendship entity) throws RepositoryException {
-        String sql = "DELETE FROM friendships_test F WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
+        String sql = "DELETE FROM friendships F WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getU1().getID()));
@@ -159,7 +160,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
                 U2.salt AS salt_user_02,
                 U2.email AS email_user_02,
                 to_char(F.friends_from, ?) AS friends_from
-                FROM friendships_test F
+                FROM friendships F
                 INNER JOIN users U1 ON F.id_user_01 = U1.id
                 INNER JOIN users U2 ON U2.id = F.id_user_02
                 WHERE U1.id = ?::int AND U2.id = ?::int OR U1.id = ?::int AND U2.id = ?::int

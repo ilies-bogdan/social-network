@@ -24,6 +24,14 @@ public class UserDBRepository implements Repository<User, Long> {
 
     @Override
     public int size() {
+        String sql = "SELECT COUNT(*) AS size FROM users";
+        try(Connection connection = DriverManager.getConnection(url, username, password);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery()) {
+            return resultSet.getInt("size");
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
         return 0;
     }
 

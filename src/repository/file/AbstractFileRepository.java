@@ -22,6 +22,9 @@ public abstract class AbstractFileRepository<E extends Entity<ID>, ID> extends I
         loadData();
     }
 
+    /**
+     * Loads the data from file into memory.
+     */
     private void loadData() {
         Path path = Paths.get(fileName);
         try {

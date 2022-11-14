@@ -114,7 +114,7 @@ public class CLI {
 
         try {
             appSrv.removeFriendship(username1, username2);
-            System.out.println("\nFriendship disbanded!\n");
+            System.out.println("\nFriendship over!:(\n");
         } catch (RepositoryException exception) {
             exception.printStackTrace();
         }
