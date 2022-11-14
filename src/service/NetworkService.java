@@ -203,13 +203,15 @@ public class NetworkService {
         for (int i = 0; i < vertexCount; i++) {
             for (int j = 0; j < vertexCount; j++) {
                 try {
-                    Set<User> friendshipID = new HashSet<>();
-                    friendshipID.add(users.get(i));
-                    friendshipID.add(users.get(j));
-                    friendshipsRepo.find(friendshipID);
-                    // If find is successful, update the adjacency matrix with 1.
-                    adj[i][j] = 1;
-                    adj[j][i] = 1;
+                    if (i != j) {
+                        Set<User> friendshipID = new HashSet<>();
+                        friendshipID.add(users.get(i));
+                        friendshipID.add(users.get(j));
+                        friendshipsRepo.find(friendshipID);
+                        // If find is successful, update the adjacency matrix with 1.
+                        adj[i][j] = 1;
+                        adj[j][i] = 1;
+                    }
                 } catch (RepositoryException ignored) {}
             }
         }

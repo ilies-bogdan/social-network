@@ -3,6 +3,7 @@ package repository.database;
 import domain.User;
 import domain.validators.UserValidator;
 import domain.validators.Validator;
+import exceptions.CorruptedDataException;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
 import repository.Repository;
@@ -22,12 +23,32 @@ public class UserDBRepository implements Repository<User, Long> {
         this.password = password;
     }
 
+    private User extractUser(ResultSet resultSet) throws SQLException, CorruptedDataException {
+        long id = resultSet.getLong("id");
+        String username = resultSet.getString("username");
+        int passwordCode = resultSet.getInt("password_code");
+        String salt = resultSet.getString("salt");
+        String email = resultSet.getString("email");
+
+        User user = new User(username, passwordCode, salt, email);
+        user.setID(id);
+        Validator<User> userValidator = new UserValidator();
+        try {
+            userValidator.validate(user);
+        } catch (ValidationException exception) { // Something must have gone wrong with the data.
+            throw new CorruptedDataException("Database data is corrupted!\n");
+        }
+
+        return user;
+    }
+
     @Override
     public int size() {
         String sql = "SELECT COUNT(*) AS size FROM users";
-        try(Connection connection = DriverManager.getConnection(url, username, password);
-        PreparedStatement statement = connection.prepareStatement(sql);
-        ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            resultSet.next();
             return resultSet.getInt("size");
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -43,19 +64,9 @@ public class UserDBRepository implements Repository<User, Long> {
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
-                long id = resultSet.getLong("id");
-                String username = resultSet.getString("username");
-                int passwordCode = resultSet.getInt("password_code");
-                String salt = resultSet.getString("salt");
-                String email = resultSet.getString("email");
-
-                User user = new User(username, passwordCode, salt, email);
-                user.setID(id);
-                Validator<User> userValidator = new UserValidator();
-                userValidator.validate(user);
-                users.add(user);
+                users.add(extractUser(resultSet));
             }
-        } catch (SQLException | ValidationException exception) {
+        } catch (CorruptedDataException | SQLException exception) {
             exception.printStackTrace();
             System.exit(1);
         }
@@ -76,6 +87,7 @@ public class UserDBRepository implements Repository<User, Long> {
 
             statement.executeUpdate();
         } catch (SQLException exception) {
+            // throw new RepositoryException("User already exists!\n");
             exception.printStackTrace();
         }
     }
@@ -88,6 +100,7 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(1, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
+            // throw new RepositoryException("User does not exist!\n");
             exception.printStackTrace();
         }
     }
@@ -99,21 +112,16 @@ public class UserDBRepository implements Repository<User, Long> {
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(id));
             ResultSet resultSet = statement.executeQuery();
-
             if (!resultSet.next()) {
                 throw new RepositoryException("Entity not found!\n");
             }
-
-            long userID = resultSet.getLong("id");
-            String username = resultSet.getString("username");
-            int passwordCode = resultSet.getInt("password_code");
-            String salt = resultSet.getString("salt");
-            String email = resultSet.getString("email");
-
-            User user = new User(username, passwordCode, salt, email);
-            user.setID(userID);
-            return user;
-        } catch (SQLException exception) {
+            return extractUser(resultSet);
+        } catch (CorruptedDataException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+        }
+        catch (SQLException exception) {
+            // throw new RepositoryException("User not found!\n");
             exception.printStackTrace();
         }
         return null;
@@ -130,7 +138,84 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(4, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
+            // throw new RepositoryException("User does not exist!\n");
             exception.printStackTrace();
         }
     }
 }
+
+//public class UserDBRepository extends AbstractDBRepository<User, Long> {
+//    public UserDBRepository(String url, String username, String password) {
+//        super(url, username, password);
+//    }
+//
+//    @Override
+//    public String sizeSqlString() {
+//        return "SELECT COUNT(*) FROM users";
+//    }
+//
+//    @Override
+//    public String getAllSqlString() {
+//        return "SELECT * FROM users";
+//    }
+//
+//    @Override
+//    public User extractEntity(ResultSet resultSet) throws SQLException, ValidationException {
+//        long id = resultSet.getLong("id");
+//        String username = resultSet.getString("username");
+//        int passwordCode = resultSet.getInt("password_code");
+//        String salt = resultSet.getString("salt");
+//        String email = resultSet.getString("email");
+//
+//        User user = new User(username, passwordCode, salt, email);
+//        user.setID(id);
+//        Validator<User> userValidator = new UserValidator();
+//        userValidator.validate(user);
+//
+//        return user;
+//    }
+//
+//    @Override
+//    public String addSqlString() {
+//        return "INSERT INTO users (id, username, password_code, salt, email) VALUES (?::int, ?, ?::int, ?, ?)";
+//    }
+//
+//    @Override
+//    public void addSqlHandle(PreparedStatement statement, User user) throws SQLException {
+//        statement.setString(1, String.valueOf(user.getID()));
+//        statement.setString(2, user.getUsername());
+//        statement.setString(3, String.valueOf(user.getPasswordCode()));
+//        statement.setString(4, user.getSalt());
+//        statement.setString(5, user.getEmail());
+//    }
+//
+//    @Override
+//    public String removeSqlString() {
+//        return "DELETE FROM users WHERE users.id = ?::int";
+//    }
+//
+//    @Override
+//    public void removeSqlHandle(PreparedStatement statement) {
+//
+//    }
+//
+//    @Override
+//    public String findSqlString() {
+//        return null;
+//    }
+//
+//    @Override
+//    public void findSqlHandle(PreparedStatement statement) {
+//
+//    }
+//
+//    @Override
+//    public String updateSqlString() {
+//        return null;
+//    }
+//
+//    @Override
+//    public void updateSqlHandle(PreparedStatement statement) {
+//
+//    }
+//}
