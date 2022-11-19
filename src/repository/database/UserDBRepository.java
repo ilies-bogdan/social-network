@@ -75,7 +75,7 @@ public class UserDBRepository implements Repository<User, Long> {
     }
 
     @Override
-    public void add(User entity) throws RepositoryException {
+    public void add(User entity) {
         String sql = "INSERT INTO users (id, username, password_code, salt, email) VALUES (?::int, ?, ?::int, ?, ?)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
         PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -87,20 +87,18 @@ public class UserDBRepository implements Repository<User, Long> {
 
             statement.executeUpdate();
         } catch (SQLException exception) {
-            // throw new RepositoryException("User already exists!\n");
             exception.printStackTrace();
         }
     }
 
     @Override
-    public void remove(User entity) throws RepositoryException {
+    public void remove(User entity) {
         String sql = "DELETE FROM users WHERE users.id = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            // throw new RepositoryException("User does not exist!\n");
             exception.printStackTrace();
         }
     }
@@ -121,14 +119,13 @@ public class UserDBRepository implements Repository<User, Long> {
             System.exit(1);
         }
         catch (SQLException exception) {
-            // throw new RepositoryException("User not found!\n");
             exception.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public void update(User entity) throws RepositoryException {
+    public void update(User entity) {
         String sql = "UPDATE users SET password_code = ?::int, salt = ?, email = ? WHERE users.id = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -138,7 +135,6 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(4, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            // throw new RepositoryException("User does not exist!\n");
             exception.printStackTrace();
         }
     }

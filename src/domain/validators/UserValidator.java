@@ -2,6 +2,7 @@ package domain.validators;
 
 import domain.User;
 import exceptions.ValidationException;
+import utils.Constants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,12 +38,30 @@ public class UserValidator implements Validator<User> {
             }
         }
 
-        if (String.valueOf(user.getPasswordCode()) == null || String.valueOf(user.getPasswordCode()) .trim().length() == 0) {
+        if (String.valueOf(user.getPasswordCode()).trim().length() == 0) {
+            message += "Invalid password code!\n";
+        }
+
+        if (message.length() > 0) {
+            throw new ValidationException(message);
+        }
+    }
+
+    /**
+     * Validates a password.
+     * @param password - The password to be validated
+     * @throws ValidationException if the password is too short.
+     */
+    public void validatePassword(String password) throws ValidationException {
+        String message = "";
+        if (password == null || password.trim().length() == 0) {
             message += "Password can not be empty!\n";
-        } else if (String.valueOf(user.getPasswordCode()) .contains(",")) {
+        }
+        if (password.contains(",")) {
             message += "Not allowed character in password!\n";
-        } else if (String.valueOf(user.getPasswordCode()) .length() < 8) {
-            message += "Password must be at least 8 characters long!\n";
+        }
+        if (password.length() < Constants.MINIMUM_PASSWORD_LENGTH) {
+            message += "Password must be at least " + Constants.MINIMUM_PASSWORD_LENGTH + " characters long!\n";
         }
 
         if (message.length() > 0) {

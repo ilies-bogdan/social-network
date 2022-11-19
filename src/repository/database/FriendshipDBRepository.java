@@ -66,7 +66,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
             resultSet.next();
             return resultSet.getInt("size");
         } catch (SQLException exception) {
-            System.exit(1);
+            exception.printStackTrace();
         }
         return 0;
     }
@@ -121,7 +121,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     }
 
     @Override
-    public void remove(Friendship entity) throws RepositoryException {
+    public void remove(Friendship entity) {
         String sql = "DELETE FROM friendships F WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -131,7 +131,6 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
             statement.setString(4, String.valueOf(entity.getU1().getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            // throw new RepositoryException("Friendship does not exist!\n");
             exception.printStackTrace();
         }
     }
@@ -173,7 +172,6 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
             System.exit(1);
         }
         catch (SQLException exception) {
-            // throw new RepositoryException("Friendship not found!\n");
             exception.printStackTrace();
         }
         return null;

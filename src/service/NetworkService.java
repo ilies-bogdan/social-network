@@ -2,6 +2,7 @@ package service;
 
 import domain.Friendship;
 import domain.User;
+import domain.validators.UserValidator;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
 import repository.Repository;
@@ -15,7 +16,7 @@ import java.util.*;
 
 public class NetworkService {
     private Repository<User, Long> usersRepo;
-    private Validator<User> userVal;
+    private UserValidator userVal;
     private Repository<Friendship, Set<User>> friendshipsRepo;
 
     private static final NetworkService network = new NetworkService();
@@ -30,7 +31,7 @@ public class NetworkService {
         return network;
     }
 
-    public void initialize(Repository<User, Long> usersRepo, Validator<User> userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
+    public void initialize(Repository<User, Long> usersRepo, UserValidator userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
         network.usersRepo = usersRepo;
         network.userVal = userVal;
         network.friendshipsRepo = friendshipsRepo;
@@ -67,6 +68,7 @@ public class NetworkService {
         User user = new User(username, passwordCode, salt, email);
         user.setID(Math.abs((long) Objects.hash(username)));
         userVal.validate(user);
+        userVal.validatePassword(password);
         usersRepo.add(user);
     }
 
@@ -117,6 +119,7 @@ public class NetworkService {
         User newUser = new User(username, passwordCode, salt, newEmail);
         newUser.setID(user.getID());
         userVal.validate(newUser);
+        userVal.validatePassword(newPassword);
         usersRepo.update(newUser);
 
         // Update Friendships.
