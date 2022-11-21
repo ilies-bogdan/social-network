@@ -27,6 +27,13 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         this.password = password;
     }
 
+    /**
+     * Extracts a friendship from an SQL result set.
+     * @param resultSet - The SQL result set
+     * @return the friendship.
+     * @throws SQLException if there was a connection error.
+     * @throws CorruptedDataException if the data read from the database is corrupted.
+     */
     private Friendship extractFriendship(ResultSet resultSet) throws  SQLException, CorruptedDataException {
         long id1 = resultSet.getLong("id_user_01");
         String username1 = resultSet.getString("username_user_01");
@@ -53,7 +60,6 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         } catch (ValidationException exception) {
             throw new CorruptedDataException("Database data is corrupted!\n");
         }
-
         return new Friendship(u1, u2, friendsFrom);
     }
 
@@ -101,7 +107,6 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
             exception.printStackTrace();
             System.exit(1);
         }
-
         return friendships;
     }
 

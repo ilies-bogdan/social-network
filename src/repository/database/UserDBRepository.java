@@ -23,6 +23,13 @@ public class UserDBRepository implements Repository<User, Long> {
         this.password = password;
     }
 
+    /**
+     * Extracts a user from an SQL result set.
+     * @param resultSet - The SQL result set
+     * @return the user.
+     * @throws SQLException if there was a connection error.
+     * @throws CorruptedDataException if the data read from the database is corrupted.
+     */
     private User extractUser(ResultSet resultSet) throws SQLException, CorruptedDataException {
         long id = resultSet.getLong("id");
         String username = resultSet.getString("username");
@@ -38,7 +45,6 @@ public class UserDBRepository implements Repository<User, Long> {
         } catch (ValidationException exception) { // Something must have gone wrong with the data.
             throw new CorruptedDataException("Database data is corrupted!\n");
         }
-
         return user;
     }
 
@@ -70,7 +76,6 @@ public class UserDBRepository implements Repository<User, Long> {
             exception.printStackTrace();
             System.exit(1);
         }
-
         return users;
     }
 
@@ -84,7 +89,6 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(3, String.valueOf(entity.getPasswordCode()));
             statement.setString(4, entity.getSalt());
             statement.setString(5, entity.getEmail());
-
             statement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();

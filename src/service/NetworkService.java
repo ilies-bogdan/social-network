@@ -93,7 +93,6 @@ public class NetworkService {
                 friendshipsRepo.remove(friendship);
             }
         }
-
         usersRepo.remove(user);
     }
 
@@ -122,7 +121,7 @@ public class NetworkService {
         userVal.validatePassword(newPassword);
         usersRepo.update(newUser);
 
-        // Update Friendships.
+        // Update friendships.
         for (int i = 0; i < friendshipsRepo.size(); i++) {
             Friendship friendship = friendshipsRepo.getAll().get(i);
             if (friendship.getU1().equals(newUser)) {
@@ -241,7 +240,6 @@ public class NetworkService {
                 communitiesCount++;
             }
         }
-
         return communitiesCount;
     }
 
@@ -300,7 +298,6 @@ public class NetworkService {
                 }
             }
         }
-
         return result;
     }
 }
