@@ -11,12 +11,14 @@ public class Friendship implements Entity<Set<User>> {
     private User u1;
     private User u2;
     private LocalDateTime friendsFrom;
+    private FriendshipStatus status;
     // TODO: Statuses for friendships (sent, accepted, rejected).
 
-    public Friendship(User u1, User u2, LocalDateTime friendsFrom) {
+    public Friendship(User u1, User u2, LocalDateTime friendsFrom, FriendshipStatus status) {
         this.u1 = u1;
         this.u2 = u2;
         this.friendsFrom = friendsFrom;
+        this.status = status;
     }
 
     public User getU1() {
@@ -43,6 +45,14 @@ public class Friendship implements Entity<Set<User>> {
         this.friendsFrom = friendsFrom;
     }
 
+    public FriendshipStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(FriendshipStatus status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -62,7 +72,10 @@ public class Friendship implements Entity<Set<User>> {
 
     @Override
     public String toString() {
-        return u1.getUsername() + " and " + u2.getUsername() + " are friends since " + friendsFrom.format(Constants.DATE_TIME_FORMATTER) + "!";
+        if (status.equals(FriendshipStatus.accepted)) {
+            return u1.getUsername() + " and " + u2.getUsername()  + " are friends since " + friendsFrom.format(Constants.DATE_TIME_FORMATTER) + "!";
+        }
+        return u1.getUsername() + " sent a friend request to " + u2.getUsername() + " on " + friendsFrom.format(Constants.DATE_TIME_FORMATTER) + "!";
     }
 
     @Override

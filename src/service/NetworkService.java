@@ -1,6 +1,7 @@
 package service;
 
 import domain.Friendship;
+import domain.FriendshipStatus;
 import domain.User;
 import domain.validators.UserValidator;
 import exceptions.RepositoryException;
@@ -37,6 +38,10 @@ public class NetworkService {
         network.friendshipsRepo = friendshipsRepo;
     }
 
+    private long getUserIDFromUsername(String username) {
+        return Math.abs((long) Objects.hash(username));
+    }
+
     /**
      * Gets the size.
      * @return number of users in the service.
@@ -66,7 +71,7 @@ public class NetworkService {
         int passwordCode = Objects.hash(password + salt);
         // To verify for password: Objects.hash(newPassword + user.getSalt())
         User user = new User(username, passwordCode, salt, email);
-        user.setID(Math.abs((long) Objects.hash(username)));
+        user.setID(getUserIDFromUsername(username));
         userVal.validate(user);
         userVal.validatePassword(password);
         usersRepo.add(user);
@@ -78,7 +83,7 @@ public class NetworkService {
      * @throws RepositoryException if the user does not exist.
      */
     public void removeUser(String username) throws RepositoryException {
-        User user = usersRepo.find(Math.abs((long) Objects.hash(username)));
+        User user = usersRepo.find(getUserIDFromUsername(username));
         // Delete all Friendships of the User.
         List<Friendship> userFriendships = new ArrayList<>();
         for (Friendship friendship : friendshipsRepo.getAll()) {
@@ -105,7 +110,7 @@ public class NetworkService {
      * @throws RepositoryException if the User does not exist.
      */
     public void updateUser(String username, String newPassword, String newEmail) throws ValidationException, RepositoryException {
-        User user = usersRepo.find(Math.abs((long) Objects.hash(username)));
+        User user = usersRepo.find(getUserIDFromUsername(username));
         String salt = RandomString.getRandomString(Constants.SALT_SIZE);
         int passwordCode = Objects.hash(newPassword + salt);
         if (newPassword == null || newPassword.trim().length() == 0) {
@@ -122,13 +127,14 @@ public class NetworkService {
         usersRepo.update(newUser);
 
         // Update friendships.
+        // NOTE: not necessary for database repository.
         for (int i = 0; i < friendshipsRepo.size(); i++) {
             Friendship friendship = friendshipsRepo.getAll().get(i);
             if (friendship.getU1().equals(newUser)) {
-                friendshipsRepo.update(new Friendship(newUser, friendship.getU2(), friendship.getFriendsFrom()));
+                friendshipsRepo.update(new Friendship(newUser, friendship.getU2(), friendship.getFriendsFrom(), friendship.getStatus()));
             }
             if (friendship.getU2().equals(newUser)) {
-                friendshipsRepo.update(new Friendship(friendship.getU1(), newUser, friendship.getFriendsFrom()));
+                friendshipsRepo.update(new Friendship(friendship.getU1(), newUser, friendship.getFriendsFrom(), friendship.getStatus()));
             }
         }
     }
@@ -145,12 +151,13 @@ public class NetworkService {
      * Creates and stores a Friendship between two Users.
      * @param username1 - The first new friend
      * @param username2 - The second new friend
+     * @param status - The status of the friendship
      * @throws RepositoryException if either of the two users has not been found.
      */
-    public void addFriendship(String username1, String username2) throws RepositoryException {
-        User user1 = usersRepo.find(Math.abs((long) Objects.hash(username1)));
-        User user2 = usersRepo.find(Math.abs((long) Objects.hash(username2)));
-        Friendship friendship = new Friendship(user1, user2, LocalDateTime.now());
+    public void addFriendship(String username1, String username2, FriendshipStatus status) throws RepositoryException {
+        User user1 = usersRepo.find(getUserIDFromUsername(username1));
+        User user2 = usersRepo.find(getUserIDFromUsername(username2));
+        Friendship friendship = new Friendship(user1, user2, LocalDateTime.now(), status);
         friendshipsRepo.add(friendship);
     }
 
@@ -161,10 +168,25 @@ public class NetworkService {
      * @throws RepositoryException if either of the two users has not been found.
      */
     public void removeFriendship(String username1, String username2) throws RepositoryException {
-        User user1 = usersRepo.find(Math.abs((long) Objects.hash(username1)));
-        User user2 = usersRepo.find(Math.abs((long) Objects.hash(username2)));
-        Friendship friendship = new Friendship(user1, user2, null);
+        User user1 = usersRepo.find(getUserIDFromUsername(username1));
+        User user2 = usersRepo.find(getUserIDFromUsername(username2));
+        Friendship friendship = new Friendship(user1, user2, null, null);
         friendshipsRepo.remove(friendship);
+    }
+
+    /**
+     * Updates a friendship.
+     * @param username1 - The first friend
+     * @param username2 - The second friend
+     * @param friendsFrom - The timestamp from when the friendship was established
+     * @param status - The status of the friendship
+     * @throws RepositoryException if the friendship does not exist.
+     */
+    public void updateFriendship(String username1, String username2, LocalDateTime friendsFrom, FriendshipStatus status) throws RepositoryException {
+        User user1 = usersRepo.find(getUserIDFromUsername(username1));
+        User user2 = usersRepo.find(getUserIDFromUsername(username2));
+        Friendship friendship = new Friendship(user1, user2, friendsFrom, status);
+        friendshipsRepo.update(friendship);
     }
 
     /**
@@ -299,5 +321,78 @@ public class NetworkService {
             }
         }
         return result;
+    }
+
+    /**
+     * Handles a log in request from a user.
+     * @param username - The user's username
+     * @param password - The user's password
+     * @return the user if the request is accepted, null otherwise.
+     * @throws RepositoryException if the user with the given username does not exist.
+     */
+    public User handleLogInRequest(String username, String password) throws RepositoryException {
+        User user = usersRepo.find(getUserIDFromUsername(username));
+        if (user.getPasswordCode() ==  Objects.hash(password + user.getSalt())) {
+            return user;
+        }
+        return null;
+    }
+
+    /**
+     * Gets a user's friends.
+     * @param user - The user
+     * @return a list of the user's friends.
+     */
+    public List<User> getFriends(User user) {
+        List<User> friends = new ArrayList<>();
+        for (Friendship friendship : friendshipsRepo.getAll()) {
+            if (friendship.getStatus().equals(FriendshipStatus.accepted)) { // Ignore the pending requests.
+                if (friendship.getU1().equals(user)) {
+                    friends.add(friendship.getU2());
+                } else if (friendship.getU2().equals(user)) {
+                    friends.add(friendship.getU1());
+                }
+            }
+        }
+        return friends;
+    }
+
+    /**
+     * Gets a user's friend requests
+     * @param user - The user
+     * @return a list of the user's friend requests.
+     */
+    public List<Friendship> getFriendRequests(User user) {
+        List<Friendship> friendRequests = new ArrayList<>();
+        for (Friendship friendship : friendshipsRepo.getAll()) {
+            if (friendship.getStatus().equals(FriendshipStatus.pending)) {
+                if (friendship.getU2().equals(user)) {
+                    friendRequests.add(friendship);
+                }
+            }
+        }
+        return friendRequests;
+    }
+
+    /**
+     * Adds a friend for a user.
+     * @param user - The user who adds the friend
+     * @param username - The username of the added friend
+     * @throws RepositoryException if the user with the given username is not found.
+     */
+    public void addFriend(User user, String username) throws RepositoryException {
+        User friend = usersRepo.find(getUserIDFromUsername(username));
+        friendshipsRepo.add(new Friendship(user, friend, LocalDateTime.now(), FriendshipStatus.pending));
+    }
+
+    /**
+     * Removes a friend for a user.
+     * @param user - The user who removes the friend
+     * @param username - The username of the removed friend
+     * @throws RepositoryException if the user with the given username is not found.
+     */
+    public void removeFriend(User user, String username) throws RepositoryException {
+        User friend = usersRepo.find(getUserIDFromUsername(username));
+        friendshipsRepo.remove(new Friendship(user, friend, null, null));
     }
 }

@@ -80,7 +80,7 @@ public class UserDBRepository implements Repository<User, Long> {
     }
 
     @Override
-    public void add(User entity) {
+    public void add(User entity) throws RepositoryException {
         String sql = "INSERT INTO users (id, username, password_code, salt, email) VALUES (?::int, ?, ?::int, ?, ?)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
         PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -91,19 +91,19 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(5, entity.getEmail());
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RepositoryException("User already exists!\n");
         }
     }
 
     @Override
-    public void remove(User entity) {
+    public void remove(User entity) throws RepositoryException {
         String sql = "DELETE FROM users WHERE users.id = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RepositoryException("User does not exists!\n");
         }
     }
 
@@ -129,7 +129,7 @@ public class UserDBRepository implements Repository<User, Long> {
     }
 
     @Override
-    public void update(User entity) {
+    public void update(User entity) throws RepositoryException {
         String sql = "UPDATE users SET password_code = ?::int, salt = ?, email = ? WHERE users.id = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -139,7 +139,7 @@ public class UserDBRepository implements Repository<User, Long> {
             statement.setString(4, String.valueOf(entity.getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RepositoryException("User does not exists!\n");
         }
     }
 }

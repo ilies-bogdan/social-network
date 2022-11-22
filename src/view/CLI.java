@@ -1,5 +1,6 @@
 package view;
 
+import domain.FriendshipStatus;
 import domain.User;
 import exceptions.RepositoryException;
 import exceptions.ValidationException;
@@ -9,10 +10,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CLI {
-    private NetworkService appSrv;
+    private NetworkService networkService;
 
-    public CLI(NetworkService usersSrv) {
-        this.appSrv = usersSrv;
+    public CLI(NetworkService networkService) {
+        this.networkService = networkService;
     }
 
     private void showMainMenu() {
@@ -45,7 +46,7 @@ public class CLI {
         String email = scanner.nextLine();
 
         try {
-            appSrv.addUser(username, password, email);
+            networkService.addUser(username, password, email);
             System.out.println("\nUser added.\n");
         } catch (RepositoryException | ValidationException exception) {
             exception.printStackTrace();
@@ -62,7 +63,7 @@ public class CLI {
 
         if (answer.equals("Y") || answer.equals("y")) {
             try {
-                appSrv.removeUser(username);
+                networkService.removeUser(username);
                 System.out.println("\nUser deleted.\n");
             } catch (RepositoryException exception) {
                 exception.printStackTrace();
@@ -85,7 +86,7 @@ public class CLI {
         String newEmail = scanner.nextLine();
 
         try {
-            appSrv.updateUser(username, newPassword, newEmail);
+            networkService.updateUser(username, newPassword, newEmail);
             System.out.println("\nUser updated!\n");
         } catch (ValidationException | RepositoryException exception) {
             exception.printStackTrace();
@@ -99,7 +100,7 @@ public class CLI {
         String username2 = scanner.nextLine();
 
         try {
-            appSrv.addFriendship(username1, username2);
+            networkService.addFriendship(username1, username2, FriendshipStatus.accepted);
             System.out.println("\nFriendship established!\n");
         } catch (RepositoryException exception) {
             exception.printStackTrace();
@@ -113,7 +114,7 @@ public class CLI {
         String username2 = scanner.nextLine();
 
         try {
-            appSrv.removeFriendship(username1, username2);
+            networkService.removeFriendship(username1, username2);
             System.out.println("\nFriendship over!:(\n");
         } catch (RepositoryException exception) {
             exception.printStackTrace();
@@ -121,7 +122,7 @@ public class CLI {
     }
 
     private void countCommunities() {
-        int communitiesCount = appSrv.getNumberOfCommunities();
+        int communitiesCount = networkService.getNumberOfCommunities();
         String be = "are ";
         String count = " communities.\n";
         if (communitiesCount == 1) {
@@ -132,7 +133,7 @@ public class CLI {
     }
 
     private void mostSociableCommunity() {
-        List<User> community = appSrv.mostSociableCommunity();
+        List<User> community = networkService.mostSociableCommunity();
         System.out.println("\nMost sociable community is:");
         for (int i = 0; i < community.size() - 1; i++) {
             System.out.print(community.get(i).toString() + " -> ");
@@ -141,11 +142,11 @@ public class CLI {
     }
 
     private void printUsers() {
-        appSrv.getAllUsers().forEach(System.out::println);
+        networkService.getAllUsers().forEach(System.out::println);
     }
 
     private void printFriendships() {
-       appSrv.getAllFriendships().forEach(System.out::println);
+       networkService.getAllFriendships().forEach(System.out::println);
     }
 
     private void runAdmin(Scanner scanner) {
@@ -172,7 +173,75 @@ public class CLI {
     }
 
     private void showUserMenu() {
-        System.out.println("\nIn user");
+        System.out.println("\n1. Show friends");
+        System.out.println("2. Show friend requests");
+        System.out.println("3. Add friend");
+        System.out.println("4. Remove friend");
+        System.out.println("\nPress X to exit User Menu");
+    }
+
+    private void showFriends(User user) {
+        networkService.getFriends(user).forEach(System.out::println);
+    }
+
+    private void showFriendRequests(User user) {
+        networkService.getFriendRequests(user).forEach(System.out::println);
+    }
+
+    private void addFriend(User user, Scanner scanner) {
+        System.out.print("Friend username: ");
+        String username = scanner.nextLine();
+        try {
+            networkService.addFriend(user, username);
+            System.out.println("Friend request sent!");
+        } catch(RepositoryException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void removeFriend(User user, Scanner scanner) {
+        System.out.print("Friend username: ");
+        String username = scanner.nextLine();
+        try {
+            networkService.removeFriend(user, username);
+            System.out.println("Friend removed / Friend request unsent!");
+        } catch(RepositoryException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void runUser(Scanner scanner) {
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        User user = null;
+        try {
+            user = networkService.handleLogInRequest(username, password);
+        } catch (RepositoryException exception) {
+            System.out.println("User does not exist.");
+            return;
+        }
+        if (user == null) {
+            System.out.println("Invalid credentials!");
+            return;
+        }
+
+        while (true) {
+            showUserMenu();
+            String input = scanner.nextLine();
+            switch (input) {
+                case "1" -> showFriends(user);
+                case "2" -> showFriendRequests(user);
+                case "3" -> addFriend(user, scanner);
+                case "4" -> removeFriend(user, scanner);
+                case "x", "X" -> {
+                    System.out.println("\nExiting User Menu...");
+                    return;
+                }
+                default -> System.out.println("\nInvalid command...");
+            }
+        }
     }
 
     public void run() {
@@ -181,19 +250,13 @@ public class CLI {
             showMainMenu();
             String input = scanner.nextLine();
             switch (input) {
-                case "1":
-                    runAdmin(scanner);
-                    break;
-                case "2":
-                    // showUserMenu();
-                    break;
-                case "x":
-                case "X":
+                case "1" -> runAdmin(scanner);
+                case "2" -> runUser(scanner);
+                case "x", "X" -> {
                     System.out.println("Exiting...");
                     return;
-                default:
-                    System.out.println("Invalid command...");
-                    break;
+                }
+                default -> System.out.println("Invalid command...");
             }
         }
     }

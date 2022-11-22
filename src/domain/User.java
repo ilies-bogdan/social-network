@@ -67,7 +67,7 @@ public class User implements Entity<Long> {
 
     @Override
     public String toString() {
-        return "Username: " + username  +", Email: " + email;
+        return "Username: " + username;
     }
 
     @Override

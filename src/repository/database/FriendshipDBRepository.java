@@ -1,6 +1,7 @@
 package repository.database;
 
 import domain.Friendship;
+import domain.FriendshipStatus;
 import domain.User;
 import domain.validators.UserValidator;
 import domain.validators.Validator;
@@ -48,6 +49,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         String email2 = resultSet.getString("email_user_02");
 
         LocalDateTime friendsFrom = LocalDateTime.parse(resultSet.getString("friends_from"), Constants.DATE_TIME_FORMATTER);
+        FriendshipStatus status = FriendshipStatus.valueOf(resultSet.getString("status"));
 
         Validator<User> userValidator = new UserValidator();
         User u1 = new User(username1, passwordCode1, salt1, email1);
@@ -60,7 +62,7 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
         } catch (ValidationException exception) {
             throw new CorruptedDataException("Database data is corrupted!\n");
         }
-        return new Friendship(u1, u2, friendsFrom);
+        return new Friendship(u1, u2, friendsFrom, status);
     }
 
     @Override
@@ -91,7 +93,8 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
                 U2.password_code AS password_code_user_02,
                 U2.salt AS salt_user_02,
                 U2.email AS email_user_02,
-                to_char(F.friends_from, ?) AS friends_from
+                to_char(F.friends_from, ?) AS friends_from,
+                F.status AS status
                 FROM friendships F
                 INNER JOIN users U1 ON F.id_user_01 = U1.id
                 INNER JOIN users U2 ON U2.id = F.id_user_02
@@ -111,32 +114,33 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     }
 
     @Override
-    public void add(Friendship entity) throws RepositoryException {
-        String sql = "INSERT INTO friendships (id_user_01, id_user_02, friends_from) VALUES (?::int, ?::int, to_timestamp(?, ?)::timestamp)";
+    public void add(Friendship friendship) throws RepositoryException {
+        String sql = "INSERT INTO friendships (id_user_01, id_user_02, friends_from, status) VALUES (?::int, ?::int, to_timestamp(?, ?)::timestamp, ?)";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, String.valueOf(entity.getU1().getID()));
-            statement.setString(2, String.valueOf(entity.getU2().getID()));
-            statement.setString(3, entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
+            statement.setString(1, String.valueOf(friendship.getU1().getID()));
+            statement.setString(2, String.valueOf(friendship.getU2().getID()));
+            statement.setString(3, friendship.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
             statement.setString(4, Constants.DATE_TIME_FORMAT_POSTGRESQL);
+            statement.setString(5, friendship.getStatus().name());
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RepositoryException("Friendship already exists!\n");
         }
     }
 
     @Override
-    public void remove(Friendship entity) {
+    public void remove(Friendship friendship) throws RepositoryException {
         String sql = "DELETE FROM friendships F WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, String.valueOf(entity.getU1().getID()));
-            statement.setString(2, String.valueOf(entity.getU2().getID()));
-            statement.setString(3, String.valueOf(entity.getU2().getID()));
-            statement.setString(4, String.valueOf(entity.getU1().getID()));
+            statement.setString(1, String.valueOf(friendship.getU1().getID()));
+            statement.setString(2, String.valueOf(friendship.getU2().getID()));
+            statement.setString(3, String.valueOf(friendship.getU2().getID()));
+            statement.setString(4, String.valueOf(friendship.getU1().getID()));
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new RepositoryException("Friendship does not exist!\n");
         }
     }
 
@@ -153,7 +157,8 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
                 U2.password_code AS password_code_user_02,
                 U2.salt AS salt_user_02,
                 U2.email AS email_user_02,
-                to_char(F.friends_from, ?) AS friends_from
+                to_char(F.friends_from, ?) AS friends_from,
+                F.status AS status
                 FROM friendships F
                 INNER JOIN users U1 ON F.id_user_01 = U1.id
                 INNER JOIN users U2 ON U2.id = F.id_user_02
@@ -183,5 +188,20 @@ public class FriendshipDBRepository implements Repository<Friendship, Set<User>>
     }
 
     @Override
-    public void update(Friendship entity) {}
+    public void update(Friendship friendship) throws RepositoryException {
+        String sql = "UPDATE friendships F SET friends_from = to_timestamp(?, ?)::timestamp, status = ?" +
+                "WHERE F.id_user_01 = ?::int AND F.id_user_02 = ?::int OR F.id_user_01 = ?::int AND F.id_user_02 = ?::int";
+        try(Connection connection = DriverManager.getConnection(url, username, password);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, friendship.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
+            statement.setString(2, Constants.DATE_TIME_FORMAT_POSTGRESQL);
+            statement.setString(3, friendship.getStatus().name());
+            statement.setString(4, String.valueOf(friendship.getU1().getID()));
+            statement.setString(5, String.valueOf(friendship.getU2().getID()));
+            statement.setString(6, String.valueOf(friendship.getU2().getID()));
+            statement.setString(7, String.valueOf(friendship.getU1().getID()));
+        } catch (SQLException exception) {
+            throw new RepositoryException("Friendship does not exist!\n");
+        }
+    }
 }

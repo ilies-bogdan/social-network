@@ -1,6 +1,7 @@
 package repository.file;
 
 import domain.Friendship;
+import domain.FriendshipStatus;
 import domain.User;
 import domain.validators.UserValidator;
 import domain.validators.Validator;
@@ -33,7 +34,7 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
 
     @Override
     public Friendship extractEntity(List<String> attributes) throws CorruptedDataException, ValidationException {
-        if (attributes.size() != 11) {
+        if (attributes.size() != 12) {
             throw new CorruptedDataException("File data is corrupted!\n");
         }
         Validator<User> userValidator = new UserValidator();
@@ -43,7 +44,7 @@ public class FriendshipFileRepository extends AbstractFileRepository<Friendship,
         User u2 = new User(attributes.get(6), Integer.parseInt(attributes.get(7)), attributes.get(8), attributes.get(9));
         u2.setID(Long.parseLong(attributes.get(5)));
         userValidator.validate(u2);
-        return new Friendship(u1, u2 , LocalDateTime.parse(attributes.get(10), Constants.DATE_TIME_FORMATTER));
+        return new Friendship(u1, u2 , LocalDateTime.parse(attributes.get(10), Constants.DATE_TIME_FORMATTER), FriendshipStatus.valueOf(attributes.get(11)));
     }
 
     @Override
