@@ -33,10 +33,12 @@ public class LogInController {
 
         try {
             User user = networkService.handleLogInRequest(username, password);
-            Stage thisStage = (Stage) textFieldUsername.getScene().getWindow();
-            thisStage.close();
+            textFieldUsername.setText("");
+            textFieldPassword.setText("");
+            Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
+            loginStage.hide();
             if (user != null) {
-                startUserSession(user);
+                startUserSession(user, loginStage);
             } else {
                 PopupMessage.showErrorMessage("Incorrect log in data!");
             }
@@ -45,7 +47,7 @@ public class LogInController {
         }
     }
 
-    private void startUserSession(User user) {
+    private void startUserSession(User user, Stage loginStage) {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/user-view.fxml"));
@@ -57,7 +59,7 @@ public class LogInController {
             stage.setScene(scene);
 
             UserController userController = fxmlLoader.getController();
-            userController.setData(networkService, user);
+            userController.setData(networkService, user, loginStage);
 
             stage.show();
         } catch (IOException exception) {

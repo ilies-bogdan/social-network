@@ -14,6 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserController implements Observer {
     private NetworkService networkService;
     private User user;
+    private Stage loginStage;
     private ObservableList<FriendshipDto> modelFriends = FXCollections.observableArrayList();
     private ObservableList<FriendshipDto> modelFriendRequests = FXCollections.observableArrayList();
     private ObservableList<User> modelUsers = FXCollections.observableArrayList();
@@ -63,9 +65,10 @@ public class UserController implements Observer {
     @FXML
     private TableColumn<User, String> tableColumnUsersEmail;
 
-    public void setData(NetworkService networkService, User user) {
+    public void setData(NetworkService networkService, User user, Stage loginStage) {
         this.networkService = networkService;
         this.user = user;
+        this.loginStage = loginStage;
         networkService.addObserver(this);
         initModel();
     }
@@ -170,5 +173,12 @@ public class UserController implements Observer {
         } catch (RepositoryException exception) {
             PopupMessage.showErrorMessage("User not found!");
         }
+    }
+
+    @FXML
+    protected void handleLogOut() {
+        Stage thisStage = (Stage) textFieldFriendUsername.getScene().getWindow();
+        thisStage.close();
+        loginStage.show();
     }
 }

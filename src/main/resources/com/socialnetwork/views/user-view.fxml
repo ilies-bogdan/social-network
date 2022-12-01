@@ -43,5 +43,6 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <Button fx:id="buttonLogOut" layoutX="1098.0" layoutY="17.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log out" />
    </children>
 </AnchorPane>
