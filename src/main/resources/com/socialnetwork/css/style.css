@@ -42,6 +42,7 @@
 
 .text-field {
     -fx-background-color: #61676c;
+    -fx-text-fill: #FFFFFF;
 }
 
 .table-view {

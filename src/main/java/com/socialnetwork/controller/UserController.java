@@ -1,5 +1,6 @@
 package com.socialnetwork.controller;
 
+import com.socialnetwork.SocialNetwork;
 import com.socialnetwork.domain.User;
 import com.socialnetwork.domain.dto.FriendshipDto;
 import com.socialnetwork.exceptions.RepositoryException;
@@ -9,17 +10,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 public class UserController implements Observer {
     private NetworkService networkService;
@@ -27,7 +26,6 @@ public class UserController implements Observer {
     private Stage loginStage;
     private ObservableList<FriendshipDto> modelFriends = FXCollections.observableArrayList();
     private ObservableList<FriendshipDto> modelFriendRequests = FXCollections.observableArrayList();
-    private ObservableList<User> modelUsers = FXCollections.observableArrayList();
 
     @FXML
     private TableView<FriendshipDto> tableViewFriends;
@@ -42,9 +40,6 @@ public class UserController implements Observer {
     private TableColumn<FriendshipDto, String> tableColumnStatus;
 
     @FXML
-    private TextField textFieldFriendUsername;
-
-    @FXML
     private Label labelFriendRequestCount;
 
     @FXML
@@ -55,15 +50,6 @@ public class UserController implements Observer {
 
     @FXML
     private TableColumn<FriendshipDto, String> tableColumnSentAt;
-
-    @FXML
-    private TableView<User> tableViewUsers;
-
-    @FXML
-    private TableColumn<User, String> tableColumnUsersUsername;
-
-    @FXML
-    private TableColumn<User, String> tableColumnUsersEmail;
 
     public void setData(NetworkService networkService, User user, Stage loginStage) {
         this.networkService = networkService;
@@ -83,15 +69,6 @@ public class UserController implements Observer {
         modelFriends.setAll(networkService.getFriendships(user));
         modelFriendRequests.setAll(networkService.getFriendRequests(user));
 
-        List<User> userList = new ArrayList<>();
-        for (User u : networkService.getAllUsers()) {
-            if (!u.equals(user)) {
-                userList.add(u);
-            }
-        }
-        modelUsers.setAll(userList);
-       // modelUsers.setAll(networkService.getAllUsers());
-
         int friendRequestCount = networkService.getFriendRequests(user).size();
         labelFriendRequestCount.setText("You have " + friendRequestCount + " friend request(s)!");
     }
@@ -106,37 +83,6 @@ public class UserController implements Observer {
         tableColumnFriendRequestsUsername.setCellValueFactory(new PropertyValueFactory<FriendshipDto, String>("friendUsername"));
         tableColumnSentAt.setCellValueFactory(new PropertyValueFactory<FriendshipDto, String>("friendsFrom"));
         tableViewFriendRequests.setItems(modelFriendRequests);
-
-        tableColumnUsersUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
-        tableColumnUsersEmail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
-        tableViewUsers.setItems(modelUsers);
-
-        textFieldFriendUsername.textProperty().addListener(o -> handleFilter());
-    }
-
-    private void handleFilter() {
-        Predicate<User> byUsername = x -> x.getUsername().toLowerCase().startsWith(textFieldFriendUsername.getText());
-
-        List<User> userList = new ArrayList<>();
-        for (User u : networkService.getAllUsers()) {
-            if (!u.equals(user)) {
-                userList.add(u);
-            }
-        }
-        modelUsers.setAll(userList.stream().filter(byUsername).collect(Collectors.toList()));
-    }
-
-    @FXML
-    protected void handleAddFriend(ActionEvent event) {
-        User friend = tableViewUsers.getSelectionModel().getSelectedItem();
-
-        try {
-            networkService.addFriend(user, friend.getUsername());
-            PopupMessage.showInformationMessage("Friend request sent!");
-            textFieldFriendUsername.clear();
-        } catch (RepositoryException exception) {
-            PopupMessage.showErrorMessage("User not found!");
-        }
     }
 
     @FXML
@@ -147,7 +93,7 @@ public class UserController implements Observer {
             networkService.removeFriend(user, friendshipDto.getFriendUsername());
             PopupMessage.showInformationMessage("Friend removed!");
         } catch (RepositoryException exception) {
-            PopupMessage.showErrorMessage("User not found!");
+            PopupMessage.showErrorMessage(exception.getMessage());
         }
     }
 
@@ -159,7 +105,7 @@ public class UserController implements Observer {
             networkService.acceptFriendRequest(user, friendshipDto.getFriendUsername());
             PopupMessage.showInformationMessage("Friend request accepted!");
         } catch (RepositoryException exception) {
-            PopupMessage.showErrorMessage("User not found!");
+            PopupMessage.showErrorMessage(exception.getMessage());
         }
     }
 
@@ -171,14 +117,35 @@ public class UserController implements Observer {
             networkService.rejectFriendRequest(user, friendshipDto.getFriendUsername());
             PopupMessage.showInformationMessage("Friend request rejected!");
         } catch (RepositoryException exception) {
-            PopupMessage.showErrorMessage("User not found!");
+            PopupMessage.showErrorMessage(exception.getMessage());
         }
     }
 
     @FXML
     protected void handleLogOut() {
-        Stage thisStage = (Stage) textFieldFriendUsername.getScene().getWindow();
+        Stage thisStage = (Stage) tableViewFriends.getScene().getWindow();
         thisStage.close();
         loginStage.show();
+    }
+
+    @FXML
+    public void handleOpenAddFriend(ActionEvent event) {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/addfriend-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            scene.getStylesheets().add(SocialNetwork.class.getResource("css/style.css").toExternalForm());
+
+            stage.setTitle("Add friend");
+            stage.setScene(scene);
+
+            AddFriendController addFriendController = fxmlLoader.getController();
+            addFriendController.setData(networkService, user);
+
+            stage.show();
+        } catch (IOException exception) {
+            PopupMessage.showErrorMessage(exception.getMessage());
+        }
     }
 }

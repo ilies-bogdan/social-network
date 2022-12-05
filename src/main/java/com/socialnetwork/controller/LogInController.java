@@ -28,19 +28,18 @@ public class LogInController {
 
     @FXML
     protected void handleLogIn(ActionEvent event) {
-        String username = textFieldUsername.getText();
-        String password = textFieldPassword.getText();
-
         try {
-            User user = networkService.handleLogInRequest(username, password);
-            textFieldUsername.setText("");
-            textFieldPassword.setText("");
-            Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
-            loginStage.hide();
-            if (user != null) {
-                startUserSession(user, loginStage);
-            } else {
-                PopupMessage.showErrorMessage("Incorrect log in data!");
+            User user = null;
+            while (user == null) {
+                String username = textFieldUsername.getText();
+                String password = textFieldPassword.getText();
+                user = networkService.handleLogInRequest(username, password);
+                textFieldPassword.setText("");
+                if (user != null) {
+                    Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
+                    loginStage.hide();
+                    startUserSession(user, loginStage);
+                }
             }
         } catch (RepositoryException exception) {
             PopupMessage.showErrorMessage("Incorrect log in data!");
@@ -51,7 +50,7 @@ public class LogInController {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/user-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+            Scene scene = new Scene(fxmlLoader.load());
 
             scene.getStylesheets().add(SocialNetwork.class.getResource("css/style.css").toExternalForm());
 
@@ -64,6 +63,27 @@ public class LogInController {
             stage.show();
         } catch (IOException exception) {
             PopupMessage.showErrorMessage("Session start error!");
+        }
+    }
+
+    @FXML
+    public void handleSignUp(ActionEvent event) {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/signup-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            scene.getStylesheets().add(SocialNetwork.class.getResource("css/login.css").toExternalForm());
+
+            stage.setTitle("Sign Up");
+            stage.setScene(scene);
+
+            SignUpController signUpController = fxmlLoader.getController();
+            signUpController.setNetworkService(networkService);
+
+            stage.show();
+        } catch (IOException exception) {
+            PopupMessage.showErrorMessage(exception.getMessage());
         }
     }
 }

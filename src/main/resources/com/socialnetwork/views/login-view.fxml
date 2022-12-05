@@ -13,5 +13,6 @@
       <TextField fx:id="textFieldUsername" layoutX="167.0" layoutY="76.0" />
       <Button fx:id="buttonLogIn" layoutX="193.0" layoutY="183.0" mnemonicParsing="false" onAction="#handleLogIn" text="Log In" />
       <PasswordField fx:id="textFieldPassword" layoutX="168.0" layoutY="125.0" />
+      <Button fx:id="buttonSignUp" layoutX="318.0" layoutY="23.0" mnemonicParsing="false" onAction="#handleSignUp" text="Sign Up" />
    </children>
 </AnchorPane>

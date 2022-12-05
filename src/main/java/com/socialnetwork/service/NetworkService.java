@@ -439,8 +439,15 @@ public class NetworkService implements Observable {
      */
     public void addFriend(User user, String friendUsername) throws RepositoryException {
         User friend = usersRepo.find(getUserIDFromUsername(friendUsername));
-        friendshipsRepo.add(new Friendship(user, friend, LocalDateTime.now(), FriendshipStatus.sent));
 
+        for (Friendship friendship : friendshipsRepo.getAll()) {
+            if (friendship.getU1().equals(user) && friendship.getU2().equals(friend) ||
+            friendship.getU1().equals(friend) && friendship.getU2().equals(user)) {
+                throw new RepositoryException("Already friends or a friend request has already been sent!");
+            }
+        }
+
+        friendshipsRepo.add(new Friendship(user, friend, LocalDateTime.now(), FriendshipStatus.sent));
         notifyAllObservers();
     }
 

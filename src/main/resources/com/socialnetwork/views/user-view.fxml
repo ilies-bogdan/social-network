@@ -4,16 +4,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="593.0" prefWidth="1191.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.socialnetwork.controller.UserController">
+<AnchorPane prefHeight="593.0" prefWidth="775.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.socialnetwork.controller.UserController">
    <children>
-      <Button fx:id="buttonAddFriend" layoutX="879.0" layoutY="512.0" mnemonicParsing="false" onAction="#handleAddFriend" text="Add friend" />
-      <Button fx:id="buttonRemoveFriend" layoutX="405.0" layoutY="422.0" mnemonicParsing="false" onAction="#handleRemoveFriend" text="Remove friend / Unsend request" />
-      <TextField fx:id="textFieldFriendUsername" layoutX="841.0" layoutY="29.0" promptText="Search for a friend..." />
+      <Button fx:id="buttonRemoveFriend" layoutX="451.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleRemoveFriend" text="Remove friend / Unsend request" />
       <Label fx:id="labelFriendRequestCount" layoutX="51.0" layoutY="33.0" prefHeight="18.0" prefWidth="254.0" />
-      <TableView fx:id="tableViewFriends" layoutX="357.0" layoutY="60.0" prefHeight="338.0" prefWidth="309.0">
+      <TableView fx:id="tableViewFriends" layoutX="397.0" layoutY="60.0" prefHeight="362.0" prefWidth="296.0">
         <columns>
           <TableColumn fx:id="tableColumnFriendsUsername" prefWidth="93.60009765625" text="Friends" />
             <TableColumn fx:id="tableColumnFriendsFrom" prefWidth="138.39990234375" text="Friends since" />
@@ -23,7 +20,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TableView fx:id="tableViewFriendRequests" layoutX="65.0" layoutY="60.0" prefHeight="362.0" prefWidth="254.0">
+      <TableView fx:id="tableViewFriendRequests" layoutX="65.0" layoutY="60.0" prefHeight="362.0" prefWidth="296.0">
         <columns>
           <TableColumn fx:id="tableColumnFriendRequestsUsername" prefWidth="122.39999389648438" text="Username" />
           <TableColumn fx:id="tableColumnSentAt" prefWidth="131.20000305175782" text="Sent at" />
@@ -32,17 +29,9 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="buttonRejectFriendRequest" layoutX="106.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleRejectFriendRequest" text="Reject" />
-      <Button fx:id="buttonAcceptFriendRequest" layoutX="217.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleAcceptFriendRequest" text="Accept" />
-      <TableView fx:id="tableViewUsers" layoutX="679.0" layoutY="73.0" prefHeight="414.0" prefWidth="471.0">
-        <columns>
-          <TableColumn fx:id="tableColumnUsersUsername" prefWidth="230.4000244140625" text="Username" />
-          <TableColumn fx:id="tableColumnUsersEmail" prefWidth="235.2" text="Email" />
-        </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <Button fx:id="buttonLogOut" layoutX="1098.0" layoutY="17.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log out" />
+      <Button fx:id="buttonRejectFriendRequest" layoutX="65.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleRejectFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Reject" />
+      <Button fx:id="buttonAcceptFriendRequest" layoutX="253.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleAcceptFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Accept" />
+      <Button fx:id="buttonLogOut" layoutX="693.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log out" />
+      <Button fx:id="buttonOpenAddFriend" layoutX="326.0" layoutY="514.0" mnemonicParsing="false" onAction="#handleOpenAddFriend" prefHeight="26.0" prefWidth="108.0" text="Add friend" />
    </children>
 </AnchorPane>
