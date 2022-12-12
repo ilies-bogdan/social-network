@@ -29,17 +29,16 @@ public class LogInController {
     @FXML
     protected void handleLogIn(ActionEvent event) {
         try {
-            User user = null;
-            while (user == null) {
-                String username = textFieldUsername.getText();
-                String password = textFieldPassword.getText();
-                user = networkService.handleLogInRequest(username, password);
-                textFieldPassword.setText("");
-                if (user != null) {
-                    Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
-                    loginStage.hide();
-                    startUserSession(user, loginStage);
-                }
+            String username = textFieldUsername.getText();
+            String password = textFieldPassword.getText();
+            User user = networkService.handleLogInRequest(username, password);
+            textFieldPassword.setText("");
+            if (user != null) {
+                Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
+                loginStage.hide();
+                startUserSession(user, loginStage);
+            } else {
+                PopupMessage.showErrorMessage("Incorrect log in data!");
             }
         } catch (RepositoryException exception) {
             PopupMessage.showErrorMessage("Incorrect log in data!");
