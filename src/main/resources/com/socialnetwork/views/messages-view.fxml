@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="726.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.socialnetwork.controller.MessagesController">
+   <children>
+      <TableView fx:id="tableViewMessages" layoutX="63.0" layoutY="41.0" prefHeight="318.0" prefWidth="319.0">
+        <columns>
+          <TableColumn fx:id="tableColumnTime" prefWidth="96.79998779296875" text="Time" />
+          <TableColumn fx:id="tableColumnFrom" prefWidth="107.20001220703125" text="From" />
+            <TableColumn fx:id="tableColumnSubject" prefWidth="114.4000244140625" text="Subject" />
+        </columns>
+      </TableView>
+      <Label fx:id="labelText" layoutX="503.0" layoutY="95.0" />
+   </children>
+</AnchorPane>

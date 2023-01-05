@@ -45,6 +45,11 @@
     -fx-text-fill: #FFFFFF;
 }
 
+.text-area {
+    -fx-background-color: #61676c;
+    -fx-text-fill: #000000;
+}
+
 .table-view {
     -fx-background-color: transparent;
 }

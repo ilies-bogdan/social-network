@@ -3,6 +3,7 @@ package com.socialnetwork;
 import com.socialnetwork.controller.LogInController;
 import com.socialnetwork.domain.validators.UserValidator;
 import com.socialnetwork.repository.database.FriendshipDBRepository;
+import com.socialnetwork.repository.database.MessageDBRepository;
 import com.socialnetwork.repository.database.UserDBRepository;
 import com.socialnetwork.service.NetworkService;
 import javafx.application.Application;
@@ -30,7 +31,8 @@ public class SocialNetwork extends Application {
         networkService = NetworkService.getInstance();
         networkService.initialize(new UserDBRepository(url, username, password),
                 new UserValidator(),
-               new FriendshipDBRepository(url, username, password));
+               new FriendshipDBRepository(url, username, password),
+                new MessageDBRepository(url, username, password));
 
         initView(primaryStage);
         primaryStage.show();

@@ -8,9 +8,9 @@
 
 <AnchorPane prefHeight="593.0" prefWidth="775.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.socialnetwork.controller.UserController">
    <children>
-      <Button layoutX="451.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleRemoveFriend" text="Remove friend / Unsend request" />
-      <Label fx:id="labelFriendRequestCount" layoutX="51.0" layoutY="33.0" prefHeight="18.0" prefWidth="254.0" />
-      <TableView fx:id="tableViewFriends" layoutX="397.0" layoutY="60.0" prefHeight="362.0" prefWidth="296.0">
+      <Button layoutX="451.0" layoutY="482.0" mnemonicParsing="false" onAction="#handleRemoveFriend" text="Remove friend / Unsend request" />
+      <Label fx:id="labelFriendRequestCount" layoutX="14.0" layoutY="77.0" prefHeight="18.0" prefWidth="254.0" />
+      <TableView fx:id="tableViewFriends" layoutX="397.0" layoutY="103.0" prefHeight="362.0" prefWidth="296.0">
         <columns>
           <TableColumn fx:id="tableColumnFriendsUsername" prefWidth="93.60009765625" text="Friends" />
             <TableColumn fx:id="tableColumnFriendsFrom" prefWidth="138.39990234375" text="Friends since" />
@@ -20,7 +20,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TableView fx:id="tableViewFriendRequests" layoutX="65.0" layoutY="60.0" prefHeight="362.0" prefWidth="296.0">
+      <TableView fx:id="tableViewFriendRequests" layoutX="65.0" layoutY="103.0" prefHeight="362.0" prefWidth="296.0">
         <columns>
           <TableColumn fx:id="tableColumnFriendRequestsUsername" prefWidth="122.39999389648438" text="Username" />
           <TableColumn fx:id="tableColumnSentAt" prefWidth="131.20000305175782" text="Sent at" />
@@ -29,9 +29,11 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="buttonRejectFriendRequest" layoutX="65.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleRejectFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Reject" />
-      <Button fx:id="buttonAcceptFriendRequest" layoutX="253.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleAcceptFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Accept" />
-      <Button fx:id="buttonLogOut" layoutX="693.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log out" />
-      <Button fx:id="buttonOpenAddFriend" layoutX="326.0" layoutY="514.0" mnemonicParsing="false" onAction="#handleOpenAddFriend" prefHeight="26.0" prefWidth="108.0" text="Add friend" />
+      <Button fx:id="buttonRejectFriendRequest" layoutX="65.0" layoutY="481.0" mnemonicParsing="false" onAction="#handleRejectFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Reject" />
+      <Button fx:id="buttonAcceptFriendRequest" layoutX="253.0" layoutY="481.0" mnemonicParsing="false" onAction="#handleAcceptFriendRequest" prefHeight="26.0" prefWidth="108.0" text="Accept" />
+      <Button fx:id="buttonLogOut" layoutX="676.0" layoutY="28.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log out" />
+      <Button fx:id="buttonOpenAddFriend" layoutX="11.0" layoutY="28.0" mnemonicParsing="false" onAction="#handleOpenAddFriend" prefHeight="26.0" prefWidth="108.0" text="Add friend" />
+      <Button layoutX="141.0" layoutY="28.0" mnemonicParsing="false" onAction="#handleSeeMessages" text="See messages" />
+      <Button layoutX="499.0" layoutY="526.0" mnemonicParsing="false" onAction="#handleSendMessage" text="Send message" />
    </children>
 </AnchorPane>

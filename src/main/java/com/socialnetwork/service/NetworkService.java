@@ -2,6 +2,7 @@ package com.socialnetwork.service;
 
 import com.socialnetwork.domain.Friendship;
 import com.socialnetwork.domain.FriendshipStatus;
+import com.socialnetwork.domain.Message;
 import com.socialnetwork.domain.User;
 import com.socialnetwork.domain.dto.FriendshipDto;
 import com.socialnetwork.domain.validators.UserValidator;
@@ -16,12 +17,14 @@ import com.socialnetwork.utils.observer.Observer;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NetworkService implements Observable {
     private Repository<User, Long> usersRepo;
     private UserValidator userVal;
     private Repository<Friendship, Set<User>> friendshipsRepo;
     private List<Observer> observers;
+    private Repository<Message, Long> messageRepo;
 
     private static final NetworkService network = new NetworkService();
 
@@ -35,10 +38,11 @@ public class NetworkService implements Observable {
         return network;
     }
 
-    public void initialize(Repository<User, Long> usersRepo, UserValidator userVal, Repository<Friendship, Set<User>> friendshipsRepo) {
+    public void initialize(Repository<User, Long> usersRepo, UserValidator userVal, Repository<Friendship, Set<User>> friendshipsRepo, Repository<Message, Long> messageRepo) {
         network.usersRepo = usersRepo;
         network.userVal = userVal;
         network.friendshipsRepo = friendshipsRepo;
+        network.messageRepo = messageRepo;
         network.observers = new ArrayList<>();
     }
 
@@ -488,5 +492,14 @@ public class NetworkService implements Observable {
         friendshipsRepo.remove(new Friendship(user, friend, null, null));
 
         notifyAllObservers();
+    }
+
+    public void addMessage(LocalDateTime sentAt, String subject, String text, String sender, String receiver) throws RepositoryException {
+        Message message = new Message(sentAt, subject, text, sender, receiver);
+        messageRepo.add(message);
+    }
+
+    public List<Message> getAllMessagesForSomeone(String username) {
+        return messageRepo.getAll().stream().filter(m -> m.getReceiver().equals(username)).sorted(Comparator.comparing(Message::getSentAt)).collect(Collectors.toList());
     }
 }

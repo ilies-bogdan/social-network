@@ -12,7 +12,6 @@ public class Friendship implements Entity<Set<User>> {
     private User u2;
     private LocalDateTime friendsFrom;
     private FriendshipStatus status;
-    // TODO: Statuses for friendships (sent, accepted, rejected).
 
     public Friendship(User u1, User u2, LocalDateTime friendsFrom, FriendshipStatus status) {
         this.u1 = u1;

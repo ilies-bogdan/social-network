@@ -148,4 +148,47 @@ public class UserController implements Observer {
             PopupMessage.showErrorMessage(exception.getMessage());
         }
     }
+
+    @FXML
+    public void handleSeeMessages() {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/messages-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            scene.getStylesheets().add(SocialNetwork.class.getResource("css/style.css").toExternalForm());
+
+            stage.setTitle("Messages");
+            stage.setScene(scene);
+
+            MessagesController messagesController = fxmlLoader.getController();
+            messagesController.setData(networkService, user.getUsername());
+
+            stage.show();
+        } catch (IOException exception) {
+            PopupMessage.showErrorMessage(exception.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleSendMessage() {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/sendmessage-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            scene.getStylesheets().add(SocialNetwork.class.getResource("css/style.css").toExternalForm());
+
+            stage.setTitle("Send message");
+            stage.setScene(scene);
+
+            FriendshipDto friendshipDto = tableViewFriends.getSelectionModel().getSelectedItem();
+            SendMessageController sendMessageController = fxmlLoader.getController();
+            sendMessageController.setData(networkService, user.getUsername(), friendshipDto.getFriendUsername());
+
+            stage.show();
+        } catch (IOException exception) {
+            PopupMessage.showErrorMessage(exception.getMessage());
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.socialnetwork;
 
+import com.socialnetwork.repository.database.MessageDBRepository;
 import com.socialnetwork.repository.factory.FriendshipRepositoryFactory;
 import com.socialnetwork.repository.factory.RepositoryStrategy;
 import com.socialnetwork.repository.factory.UserRepositoryFactory;
@@ -19,7 +20,8 @@ public class Main {
         NetworkService networkService = NetworkService.getInstance();
         networkService.initialize(UserRepositoryFactory.getInstance().createRepository(RepositoryStrategy.database, null, url, username, password),
                 new UserValidator(),
-                FriendshipRepositoryFactory.getInstance().createRepository(RepositoryStrategy.database, null, url, username, password));
+                FriendshipRepositoryFactory.getInstance().createRepository(RepositoryStrategy.database, null, url, username, password),
+                new MessageDBRepository(url, username, password));
 
         CLI cli = new CLI(networkService);
         cli.run();
