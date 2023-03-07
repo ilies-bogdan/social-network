@@ -35,7 +35,7 @@ public class LogInController {
             textFieldPassword.setText("");
             if (user != null) {
                 Stage loginStage = (Stage) textFieldUsername.getScene().getWindow();
-                loginStage.hide();
+                // loginStage.hide();
                 startUserSession(user, loginStage);
             } else {
                 PopupMessage.showErrorMessage("Incorrect log in data!");
